@@ -10,6 +10,8 @@ from collections import defaultdict
 from dotenv import load_dotenv
 
 load_dotenv()
+import pickle
+from collections import defaultdict
 
 description = '''A bot to help strangers make words out of letters'''
 
@@ -21,6 +23,18 @@ token = os.environ["TOKEN"]
 
 pl_letters = defaultdict(list) # dictionary of lists for letters owned by each player
 all_letters = [] # list to store all letters deployed, for testing
+
+# TODO: factor out into a separate file
+class Game:
+    state = {}
+    state["pl_letters"] = defaultdict(list) # dictionary of lists for letters owned by each player
+    state["all_letters"] = [] # list to store all letters deployed, for testing
+    def save(self):
+        print("TODO: save to file")
+    def load(self):
+        print("TODO: load from file")
+        
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -63,33 +77,38 @@ async def on_message(message):
 @bot.command(description='For getting new letters')
 # give player a random letter, adding to their collection
 async def get(ctx):
+    game = Game()
+    game.load()
     letter_rand = random.choice(string.ascii_uppercase) # TODO: break into function, fix probability
     player = ctx.author
     try:
-        pl_letters[player].append(letter_rand)
+        game.state["pl_letters"][player].append(letter_rand)
         logging.debug("gave {} to {}".format(letter_rand, player))
         await ctx.send("Hi {}, you can have a {}".format(player, letter_rand))
     except:
-        pl_letters[player] = ''
+        game.state["pl_letters"][player] = ''
         logging.debug("no letters found for {}".format(player))
-    all_letters.append(letter_rand)
+    game.state["all_letters"].append(letter_rand)
+    game.save()
     return (letter_rand)
 
 @bot.command(description='Find out current letters owned by player')
 async def current(ctx):
+    game = Game()
     player = ctx.author
     logging.debug("Fetching letters for {}".format(player))
     try:
-        letter_list = pl_letters[player]
+        letter_list = game.state["pl_letters"][player]
         logging.debug("got letters for {}: {}".format(player, str(letter_list)))
     except:
         letter_list = []
-    await ctx.send("{} your letters are {}".format(player, str(pl_letters[player])))
+    await ctx.send("{} your letters are {}".format(player, str(game.state["pl_letters"][player])))
 
 @bot.command(description='Find out what letters this bot has given out')
 async def show_all(ctx):
+    game = Game()
     logging.debug("Full letter output requested")
-    await ctx.send(str(all_letters))
+    await ctx.send(str(game.state["all_letters"]))
 
 @bot.command(description='Hello and introductions')
 async def hello(ctx):
