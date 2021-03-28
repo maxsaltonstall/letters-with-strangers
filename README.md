@@ -4,10 +4,6 @@
 
 Letters With Strangers is a collaborative word-forming game played online via small groups and a Discord bot. Progress over time, expand your vocabulary, and cooperative with friends new and old!
 
-Table of Contents
-=================
-- [Installation Instructions](#installation-instructions)
-
 ## Installation Instructions
 First, clone the repo and `cd` into it.
 ```sh
