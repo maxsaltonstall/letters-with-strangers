@@ -8,16 +8,21 @@ Table of Contents
 - [Installation Instructions](#installation-instructions)
 
 ## Installation Instructions
-First, clone the repo.
+First, clone the repo and `cd` into it.
 ```sh
 git clone https://github.com/davidstanke/letters-with-strangers
+cd letters-with-strangers
 ```
-Then, install all packages and go into the bot's venv with [pipenv](https://pypi.org/project/pipenv/)
+Install pipenv if you don't already have it installed
 ```sh
-python -m pipenv install
-python -m pipenv shell
+pip install pipenv
 ```
-Create a `.env` file and add this to the file:
+Then, install all packages with [pipenv](https://pypi.org/project/pipenv/)
+```sh
+python -m pipenv shell
+python -m pipenv install
+```
+Create a `.env` file and add this to the end of it:
 ```env
 TOKEN=[insert token here]
 ```
