@@ -1,5 +1,6 @@
-import os, random, string, logging
+import os, random, string, logging, collections, asyncio, jsonpickle
 from collections import defaultdict
+from os import path
 
 from discord.ext import commands
 
@@ -20,23 +21,48 @@ pl_letters = defaultdict(list)  # dictionary of lists for letters owned by each 
 all_letters = []  # list to store all letters deployed, for testing
 
 
-# TODO: factor out into a separate file
 class Game:
-    state = {}
-    state["pl_letters"] = defaultdict(
-        list
-    )  # dictionary of lists for letters owned by each player
-    state["all_letters"] = []  # list to store all letters deployed, for testing
+    # game state is stored in a JSON file in folder `.lws` (which is .gitignore'd)
+    # TODO: create alternative cloud-backed storage mechanism
+    statefile = ".lws/gamestate.json"
 
     def save(self):
-        print("TODO: save to file")
-
+        pickled = jsonpickle.encode(self.state)
+        with open(self.statefile,'w') as statefile:
+            statefile.write(pickled)
+            statefile.close()
+        
     def load(self):
-        print("TODO: load from file")
+        if path.exists(self.statefile):
+            logging.debug("FILE EXISTS")
+            with open(self.statefile,'r') as statefile:
+                self.state = jsonpickle.decode(statefile.read())
+            logging.debug(self.state)
+        else:
+            self.state = {}
+            self.state["pl_letters"] = defaultdict(list) # dictionary of lists for letters owned by each player
+            self.state["all_letters"] = [] # list to store all letters deployed, for testing
+
+    def get_player_letters(self, player):
+        return self.state["pl_letters"][format_player_id(player)]
+
+    def add_player_letter(self, player, letter):
+        self.state["pl_letters"][format_player_id(player)].append(letter)
+        self.state["all_letters"].append(letter)
+
+    def get_all_letters(self):
+        if len(self.state["all_letters"]) == 0:
+            return("You have no letters!")
+        elif len(self.state["all_letters"]) == 1:
+            return("You have 1 letter, which is " + self.state["all_letters"][0] + ".")
+        else:
+            return("You have the letters " + str(" and ".join([", ".join(self.state["all_letters"][:-1]),self.state["all_letters"][-1]] if len(self.state["all_letters"]) > 2 else self.state["all_letters"])) + ".")
 
 
 logging.basicConfig(level=logging.DEBUG)
 
+def format_player_id(player):
+    return f"{player.name}#{player.discriminator}"
 
 @bot.event
 async def on_ready():
@@ -82,18 +108,11 @@ async def on_message(message):
 async def get(ctx):
     game = Game()
     game.load()
-    letter_rand = random.choice(
-        string.ascii_uppercase
-    )  # TODO: break into function, fix probability
     player = ctx.author
-    try:
-        game.state["pl_letters"][player].append(letter_rand)
-        logging.debug("gave {} to {}".format(letter_rand, player))
-        await ctx.send("Hi {}, you can have a {}".format(player, letter_rand))
-    except:
-        game.state["pl_letters"][player] = ""
-        logging.debug("no letters found for {}".format(player))
-    game.state["all_letters"].append(letter_rand)
+    letter_rand = random.choice(string.ascii_uppercase) # TODO: break into function, fix probability
+    game.add_player_letter(player, letter_rand)
+    logging.debug("gave {} to {}".format(letter_rand, player))
+    await ctx.send("Hi {}, you can have a {}".format(player, letter_rand))
     game.save()
     return letter_rand
 
@@ -101,46 +120,22 @@ async def get(ctx):
 @bot.command(description="Find out current letters owned by player")
 async def current(ctx):
     game = Game()
+    game.load()
     player = ctx.author
     logging.debug("Fetching letters for {}".format(player))
-    try:
-        letter_list = game.state["pl_letters"][player]
-        logging.debug("got letters for {}: {}".format(player, str(letter_list)))
-    except:
-        letter_list = []
-    await ctx.send(
-        "{} your letters are {}".format(player, str(game.state["pl_letters"][player]))
-    )
+    letter_list = game.get_player_letters(player)
+    logging.debug("got letters for {}: {}".format(player, str(letter_list)))
+    await ctx.send("{} your letters are {}".format(player, str(letter_list)))
 
 
 @bot.command(description="Find out what letters this bot has given out")
 async def show_all(ctx):
     game = Game()
+    game.load()
     logging.debug("Full letter output requested")
-    if len(game.state["all_letters"]) == 0:
-        await ctx.send("You have no letters!")
-    elif len(game.state["all_letters"]) == 1:
-        await ctx.send(
-            "You have 1 letter, which is " + game.state["all_letters"][0] + "."
-        )
-    else:
-        await ctx.send(
-            "You have the letters "
-            + str(
-                " and ".join(
-                    [
-                        ", ".join(game.state["all_letters"][:-1]),
-                        game.state["all_letters"][-1],
-                    ]
-                    if len(game.state["all_letters"]) > 2
-                    else game.state["all_letters"]
-                )
-            )
-            + "."
-        )
+    await ctx.send(game.get_all_letters())
 
-
-@bot.command(description="Hello and introductions")
+@bot.command(description='Hello and introductions')
 async def hello(ctx):
     player = ctx.author
     await ctx.send(

@@ -1,4 +1,5 @@
 # Letters With Strangers
+
 ### _Scrabble, but Discord_
 ![Made with Python](https://forthebadge.com/images/badges/made-with-python.svg) [![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com) ![Discord bot invite link](https://img.shields.io/badge/Bot%20Invite%20Link-Coming%20Soon-red?style=for-the-badge)
 
