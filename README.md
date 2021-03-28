@@ -43,3 +43,9 @@ You can start monitoring with
 pm2 start pm2.json # or, get more detailed info with
 pm2 monit pm2.json
 ```
+
+## Running locally in Docker
+```sh
+docker build -t lws .
+docker run -it --env-file=.env lws
+```

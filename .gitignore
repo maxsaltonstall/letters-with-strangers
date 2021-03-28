@@ -1,4 +1,4 @@
 .vscode
 .venv
-.lws/gamestate.json
+.lws
 .env
