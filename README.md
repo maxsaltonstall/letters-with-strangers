@@ -10,7 +10,7 @@ First, clone the repo and `cd` into it.
 git clone https://github.com/davidstanke/letters-with-strangers
 cd letters-with-strangers
 ```
-Install pipenv if you don't already have it installed
+Install pipenv (if you don't already have it installed)
 ```sh
 pip install pipenv
 ```
