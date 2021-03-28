@@ -1,7 +1,6 @@
-import os, random, string, logging, collections, asyncio, pickle
+import os, random, string, logging
 from collections import defaultdict
 
-import discord
 from discord.ext import commands
 
 from dotenv import load_dotenv
@@ -11,8 +10,8 @@ load_dotenv()
 description = """A bot to help strangers make words out of letters"""
 
 # set the prefix bot will watch for
-bot = commands.Bot(
-    command_prefix="..", description=description)
+
+bot = commands.Bot(command_prefix="..", description=description)
 
 # make this an environment variable
 token = os.environ["TOKEN"]
@@ -20,10 +19,12 @@ token = os.environ["TOKEN"]
 pl_letters = defaultdict(list)  # dictionary of lists for letters owned by each player
 all_letters = []  # list to store all letters deployed, for testing
 
+
 # TODO: factor out into a separate file
 class Game:
     state = {}
-    state["pl_letters"] = defaultdict(   list
+    state["pl_letters"] = defaultdict(
+        list
     )  # dictionary of lists for letters owned by each player
     state["all_letters"] = []  # list to store all letters deployed, for testing
 
@@ -40,9 +41,7 @@ logging.basicConfig(level=logging.DEBUG)
 @bot.event
 async def on_ready():
     print("We have logged in as ")
-    print(
-        bot.user.display_name
-    )
+    print(bot.user.display_name)
     print("\nLet" "s make some words")
 
 
@@ -89,8 +88,7 @@ async def get(ctx):
     player = ctx.author
     try:
         game.state["pl_letters"][player].append(letter_rand)
-        logging.debug("gave {} to {}".format(
-            letter_rand, player))
+        logging.debug("gave {} to {}".format(letter_rand, player))
         await ctx.send("Hi {}, you can have a {}".format(player, letter_rand))
     except:
         game.state["pl_letters"][player] = ""
@@ -122,7 +120,8 @@ async def show_all(ctx):
     if len(game.state["all_letters"]) == 0:
         await ctx.send("You have no letters!")
     elif len(game.state["all_letters"]) == 1:
-        await ctx.send("You have 1 letter, which is " + game.state["all_letters"][0] + "."
+        await ctx.send(
+            "You have 1 letter, which is " + game.state["all_letters"][0] + "."
         )
     else:
         await ctx.send(
