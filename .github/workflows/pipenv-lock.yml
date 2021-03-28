@@ -36,4 +36,5 @@ jobs:
       - name: Perform action when files change.
         if: steps.changed_files.outputs.files_changed == 'true'
         run: |
+          echo "Looks like you have an invalid Pipfile.lock! Try running "pipenv lock", and then try again"
           exit 1
