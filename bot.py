@@ -102,7 +102,12 @@ async def current(ctx):
 async def show_all(ctx):
     game = Game()
     logging.debug("Full letter output requested")
-    await ctx.send(str(game.state["all_letters"]))
+    if len(game.state["all_letters"]) == 0:
+        await ctx.send("You have no letters!")
+    elif len(game.state["all_letters"]) == 1:
+        await ctx.send("You have 1 letter, which is " + game.state["all_letters"][0] + ".")
+    else:
+        await ctx.send("You have the letters " + str(" and ".join([", ".join(game.state["all_letters"][:-1]),game.state["all_letters"][-1]] if len(game.state["all_letters"]) > 2 else game.state["all_letters"])) + ".")
 
 @bot.command(description='Hello and introductions')
 async def hello(ctx):
