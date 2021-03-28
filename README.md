@@ -20,7 +20,8 @@ pip install pipenv
 Then, install all packages with [pipenv](https://pypi.org/project/pipenv/)
 ```sh
 python -m pipenv shell
-python -m pipenv install
+python -m pipenv install --no-lock
+python -m pipenv lock --pre
 ```
 Create a `.env` file and add this to the end of it:
 ```env
