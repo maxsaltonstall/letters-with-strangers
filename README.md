@@ -27,3 +27,13 @@ Finally, start the bot with:
 ```sh
 python bot.py
 ```
+## Monitoring with PM2
+PM2 is a cool monitoring application. First, go into the pipenv with
+```sh
+python -m pipenv shell
+```
+You can start monitoring with
+```sh
+pm2 start pm2.json # or, get more detailed info with
+pm2 monit pm2.json
+```
