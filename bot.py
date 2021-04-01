@@ -15,7 +15,6 @@ description = '''A bot to help strangers make words out of letters'''
 # set the prefix bot will watch for
 bot = commands.Bot(command_prefix='..', description=description)
 
-pl_letters = defaultdict(list)  # dictionary of lists for letters owned by each player
 all_letters = []  # list to store all letters deployed, for testing
 valid_words = ['CAT', 'RAT', 'BAT', 'SAT', 'MAT', 'TALL', 'BALL', 'CALL', 'FALL', 'FAR', 'TAR',
                'BAR', 'CAR', 'CAB', 'TAB', 'LAB', 'GNAT', 'TAN', 'CAN', 'BAN', 'RAN', 'BASS',
@@ -44,55 +43,108 @@ async def on_ready():
     print('\nLet''s make some words')
 
 
+players = {}
+
+
+class Player:
+
+    def __init__(self, user):
+        self.username = user.name
+        self.letters = []
+        self.score = 0
+
+    def get_letters(self):
+        return self.letters
+
+    def add_letter(self, letter):
+        self.letters.append(letter)
+
+    def remove_letter(self, letter):
+        self.letters.remove(letter)
+
+    def num_letters(self):
+        return len(self.letters)
+
+    def get_username(self):
+        return self.username
+
+    def add_points(self, points):
+        self.score += points
+
+    def get_score(self):
+        return self.score
+
+    def __str__(self):
+        return self.get_username()
+
+
+def load_player(user):
+    if not format_name(user) in players:
+        players[format_name(user)] = Player(user)
+
+    return players[format_name(user)]
+
+
+def format_name(user):
+    return f"{user.name}#{user.discriminator}"
+
+
 @bot.command(description='For getting new letters')
 # Players can request a new letter from the bot
 # Currently up to 8 letters per player
 async def get(ctx):
-    player = ctx.author
-    if len(pl_letters[player]) >= HANDLIMIT:
-        await ctx.send("{}, you already have a full hand of letters", format(player))
+    player = load_player(ctx.author)
+    username = player.get_username()
+    if player.num_letters() >= HANDLIMIT:
+        await ctx.send("{}, you already have a full hand of letters".format(username))
         return
     else:
-        letter_rand = await random_letter(player)
+        letter_rand = await random_letter()
         try:
-            pl_letters[player].append(letter_rand)
-            logging.debug("gave {} to {}".format(letter_rand, player))
-            await ctx.send("{}, you can have a {}".format(player, letter_rand))
+            player.add_letter(letter_rand)
+            logging.debug("gave {} to {}".format(letter_rand, username))
+            await ctx.send("{}, you can have a {}".format(username, letter_rand))
         except:
-            pl_letters[player] = ''
-            logging.debug("# Error 3 #: no letters found for {}".format(player))
+            logging.debug("# Error 3 #: no letters found for {}".format(username))
         all_letters.append(letter_rand)
         return (letter_rand)
 
 
 @bot.command(description='Find out current letters owned by player', aliases=['curr', 'cu'])
 async def current(ctx):
-    player = ctx.author
+    player = load_player(ctx.author)
     logging.debug("Fetching letters for {}".format(player))
     try:
-        letter_list = pl_letters[player]
+        letter_list = player.get_letters()
         logging.debug("got letters for {}: {}".format(player, str(letter_list)))
     except:
         letter_list = []
-    await ctx.send("{} your letters are {}".format(player, str(pl_letters[player])))
+    await ctx.send("{} your letters are {}".format(player, str(letter_list)))
 
 
 @bot.command(description='Make a word')
 async def word(ctx, *args):
-    player = ctx.author
+    player = load_player(ctx.author)
     word = args[0]
     if word in words_i_know:  # is this a word I think is valid
         points = len(word)
+        player.add_points(points)
         await ctx.send("{} formed the word ""{}"" and scored {} points".format(player, word, points))
         for ltr in word:  # try to remvoe letters in word from player's inventory
             ## TODO: need to check only unique letters, avoid duplicates
             try:
-                pl_letters[player].remove(ltr.upper())
-            except:
+                player.remove_letter(ltr.upper())
+            except Exception as e:
+                # print('Failed to remove letter: ' + str(e))
                 await ctx.send("# Error 1 #: Couldn't remove ''{}'' from {}'s letters".format(ltr, player))
     else:
         await ctx.send("# Error 2 #: I don't know the word ""{}"" yet, sorry".format(word))
 
+
+@bot.command(description='Get my score')
+async def score(ctx):
+    player = load_player(ctx.author)
+    await ctx.send(f"{player}, your score is {player.get_score()}")
 
 @bot.command(description='Find out what letters this bot has given out')
 async def show_all(ctx):
@@ -111,8 +163,7 @@ async def hello(ctx):
 
 # Give a semi-random letter, to help people make words
 # TODO: Match proper frequencies for english words, see weight matrix above
-async def random_letter(author):
-    # curr = pl_letters[author]
+async def random_letter():
     ltr = ''
     r = random.randint(1, 12)
     if r == 1 or r == 2:
