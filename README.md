@@ -49,3 +49,5 @@ pm2 monit pm2.json
 docker build -t lws .
 docker run -it --env-file=.env lws
 ```
+
+
