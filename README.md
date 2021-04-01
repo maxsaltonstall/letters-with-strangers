@@ -57,8 +57,18 @@ python -m pipenv shell
 
 You can start monitoring with
 ```sh
-pm2 start pm2.json # or, get more detailed info with
-pm2 monit pm2.json
+pm2 start pm2.json --watch  
+
+# or, get more detailed info with
+pm2 monit pm2.json --watch
+
+# or to stream output to the terminal
+pm2 start pm2.json --watch --no-daemon
+```
+
+To stop monitoring:
+```sh
+pm2 stop all
 ```
 
 ## Running locally in Docker
