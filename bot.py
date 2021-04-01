@@ -1,4 +1,4 @@
-import os, random, string, logging, collections, asyncio # jsonpickle
+import os, random, string, logging, collections, asyncio
 from collections import defaultdict
 from os import path
 
@@ -7,6 +7,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
+token = os.environ["TOKEN"]
 
 HANDLIMIT = 8
 
@@ -14,9 +15,6 @@ description = '''A bot to help strangers make words out of letters'''
 
 # set the prefix bot will watch for
 bot = commands.Bot(command_prefix='..', description=description)
-
-# make this an environment variable
-token = ''
 
 pl_letters = defaultdict(list) # dictionary of lists for letters owned by each player
 all_letters = [] # list to store all letters deployed, for testing

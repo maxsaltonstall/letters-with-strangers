@@ -11,33 +11,50 @@ First, clone the repo and `cd` into it.
 git clone https://github.com/davidstanke/letters-with-strangers
 cd letters-with-strangers
 ```
+
 Install pipenv (if you don't already have it installed)
 ```sh
 pip install pipenv
 ```
-Then, install all packages with [pipenv](https://pypi.org/project/pipenv/)
+
+This project uses [pipenv](https://pypi.org/project/pipenv/) to manage packages and provide virtualization.
+Initialize a pipenv virtual environment and install dependencies into it:
 ```sh
 python -m pipenv shell
+pip install pipenv
 python -m pipenv install
 ```
+
 Create a `.env` file and add this to the end of it:
 ```env
 TOKEN=[insert token here]
 ```
+
 Finally, start the bot with:
 ```sh
 python bot.py
 ```
+
+## Linting
+This repo has an Actions config that will apply the flake8 linter to all PRs.
+To run the linter locally (within your pipenv shell):
+```sh
+pipenv install --dev
+python -m flake8
+```
+
 ## Monitoring with PM2
 PM2 is a cool monitoring application. 
 You can install PM2 with
 ```sh
 npm i -g pm2
 ```
+
 Go into the pipenv with
 ```sh
 python -m pipenv shell
 ```
+
 You can start monitoring with
 ```sh
 pm2 start pm2.json # or, get more detailed info with
