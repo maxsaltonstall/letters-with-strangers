@@ -1,31 +1,75 @@
-import discord
-from discord.ext import commands
-import asyncio
-import random
-import string
-import logging
-import os
-import collections
+import os, random, string, logging, collections, asyncio, jsonpickle
 from collections import defaultdict
+from os import path
 
-description = '''A bot to help strangers make words out of letters'''
+from discord.ext import commands
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+description = """A bot to help strangers make words out of letters"""
 
 # set the prefix bot will watch for
-bot = commands.Bot(command_prefix='..', description=description)
+
+bot = commands.Bot(command_prefix="..", description=description)
 
 # make this an environment variable
-token = token
+token = os.environ["TOKEN"]
 
-pl_letters = defaultdict(list) # dictionary of lists for letters owned by each player
-all_letters = [] # list to store all letters deployed, for testing
+pl_letters = defaultdict(list)  # dictionary of lists for letters owned by each player
+all_letters = []  # list to store all letters deployed, for testing
+
+
+class Game:
+    # game state is stored in a JSON file in folder `.lws` (which is .gitignore'd)
+    # TODO: create alternative cloud-backed storage mechanism
+    statefile = ".lws/gamestate.json"
+
+    def save(self):
+        pickled = jsonpickle.encode(self.state)
+        with open(self.statefile,'w') as statefile:
+            statefile.write(pickled)
+            statefile.close()
+        
+    def load(self):
+        if path.exists(self.statefile):
+            logging.debug("FILE EXISTS")
+            with open(self.statefile,'r') as statefile:
+                self.state = jsonpickle.decode(statefile.read())
+            logging.debug(self.state)
+        else:
+            self.state = {}
+            self.state["pl_letters"] = defaultdict(list) # dictionary of lists for letters owned by each player
+            self.state["all_letters"] = [] # list to store all letters deployed, for testing
+
+    def get_player_letters(self, player):
+        return self.state["pl_letters"][format_player_id(player)]
+
+    def add_player_letter(self, player, letter):
+        self.state["pl_letters"][format_player_id(player)].append(letter)
+        self.state["all_letters"].append(letter)
+
+    def get_all_letters(self):
+        if len(self.state["all_letters"]) == 0:
+            return("You have no letters!")
+        elif len(self.state["all_letters"]) == 1:
+            return("You have 1 letter, which is " + self.state["all_letters"][0] + ".")
+        else:
+            return("You have the letters " + str(" and ".join([", ".join(self.state["all_letters"][:-1]),self.state["all_letters"][-1]] if len(self.state["all_letters"]) > 2 else self.state["all_letters"])) + ".")
+
 
 logging.basicConfig(level=logging.DEBUG)
 
+def format_player_id(player):
+    return f"{player.name}#{player.discriminator}"
+
 @bot.event
 async def on_ready():
-    print('We have logged in as ')
+    print("We have logged in as ")
     print(bot.user.display_name)
-    print('\nLet''s make some words')
+    print("\nLet" "s make some words")
+
 
 """
 @bot.event
@@ -57,42 +101,50 @@ async def on_message(message):
     if response:
         await message.channel.send(response)
 """
-@bot.command(description='For getting new letters')
+
+
+@bot.command(description="For getting new letters")
 # give player a random letter, adding to their collection
 async def get(ctx):
-    letter_rand = random.choice(string.ascii_uppercase) # TODO: break into function, fix probability
+    game = Game()
+    game.load()
     player = ctx.author
-    try:
-        pl_letters[player].append(letter_rand)
-        logging.debug("gave {} to {}".format(letter_rand, player))
-        await ctx.send("Hi {}, you can have a {}".format(player, letter_rand))
-    except:
-        pl_letters[player] = ''
-        logging.debug("no letters found for {}".format(player))
-    all_letters.append(letter_rand)
-    return (letter_rand)
+    letter_rand = random.choice(string.ascii_uppercase) # TODO: break into function, fix probability
+    game.add_player_letter(player, letter_rand)
+    logging.debug("gave {} to {}".format(letter_rand, player))
+    await ctx.send("Hi {}, you can have a {}".format(player, letter_rand))
+    game.save()
+    return letter_rand
 
-@bot.command(description='Find out current letters owned by player')
+
+@bot.command(description="Find out current letters owned by player")
 async def current(ctx):
+    game = Game()
+    game.load()
     player = ctx.author
     logging.debug("Fetching letters for {}".format(player))
-    try:
-        letter_list = pl_letters[player]
-        logging.debug("got letters for {}: {}".format(player, str(letter_list)))
-    except:
-        letter_list = []
-    await ctx.send("{} your letters are {}".format(player, str(pl_letters[player])))
+    letter_list = game.get_player_letters(player)
+    logging.debug("got letters for {}: {}".format(player, str(letter_list)))
+    await ctx.send("{} your letters are {}".format(player, str(letter_list)))
 
-@bot.command(description='Find out what letters this bot has given out')
+
+@bot.command(description="Find out what letters this bot has given out")
 async def show_all(ctx):
+    game = Game()
+    game.load()
     logging.debug("Full letter output requested")
-    await ctx.send(str(all_letters))
+    await ctx.send(game.get_all_letters())
 
 @bot.command(description='Hello and introductions')
 async def hello(ctx):
     player = ctx.author
-    await ctx.send("Hello {}, and welcome to Letters With Strangers. I'm here to help you play the game".format(player))
+    await ctx.send(
+        "Hello {}, and welcome to Letters With Strangers. I'm here to help you play the game".format(
+            player
+        )
+    )
 
-#async def check_letters(letters, player):
+
+# async def check_letters(letters, player):
 
 bot.run(token)
