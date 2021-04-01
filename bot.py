@@ -1,4 +1,4 @@
-import os, random, string, logging, collections, asyncio, # jsonpickle
+import os, random, string, logging, collections, asyncio # jsonpickle
 from collections import defaultdict
 from os import path
 
@@ -7,6 +7,8 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
+
+HANDLIMIT = 8
 
 description = '''A bot to help strangers make words out of letters'''
 
@@ -24,8 +26,9 @@ valid_words = ['CAT', 'RAT', 'BAT', 'SAT', 'MAT', 'TALL', 'BALL', 'CALL', 'FALL'
                'TELL', 'SET', 'NET', 'EAT', 'BEAT', 'NEAT', 'SEAT', 'TEAR', 'STAR', 'LANE', 'ARE',
                'SELL', 'SALE', 'SEAL', 'LEER', 'STELLAR', 'TREE', 'SEER', 'PEER', 'PEAR', 'APE',
                'TINE', 'SINE', 'SIN', 'NIT', 'RISE', 'LINT', 'TILL', 'SILL', 'TIN', 'TIRE', 'AND',
-               'END', 'SAND', 'SEND', 'TEND', 'STAND', 'LET', 'TEN']
-words_i_know = frozenset(valid_words) # used to speed up querying
+               'END', 'SAND', 'SEND', 'TEND', 'STAND', 'LET', 'TEN', 'RITE', 'BITE', 'SITE', 'LIT',
+               'FIT', 'SIT', 'TIT', 'TAT', 'PAT', 'STALL']
+words_i_know = frozenset(valid_words) # used to speed up querying to see if word exists
 letter_weight = { # each integer = percent chance * 10 to appear, 100 = 10%
 
     "A": 85, "B": 20, "C": 45, "D": 34, "E": 112, "F": 18, "G": 25, "H": 30, "I": 75, "J": 2,
@@ -42,19 +45,24 @@ async def on_ready():
     print('\nLet''s make some words')
 
 @bot.command(description='For getting new letters')
-# give player a random letter, adding to their collection
+# Players can request a new letter from the bot
+# Currently up to 8 letters per player
 async def get(ctx):
     player = ctx.author
-    letter_rand = await random_letter(player)
-    try:
-        pl_letters[player].append(letter_rand)
-        logging.debug("gave {} to {}".format(letter_rand, player))
-        await ctx.send("{}, you can have a {}".format(player, letter_rand))
-    except:
-        pl_letters[player] = ''
-        logging.debug("# Error 3 #: no letters found for {}".format(player))
-    all_letters.append(letter_rand)
-    return (letter_rand)
+    if len(pl_letters[player]) >= HANDLIMIT:
+        await ctx.send("{}, you already have a full hand of letters",format(player))
+        return
+    else:
+        letter_rand = await random_letter(player)
+        try:
+            pl_letters[player].append(letter_rand)
+            logging.debug("gave {} to {}".format(letter_rand, player))
+            await ctx.send("{}, you can have a {}".format(player, letter_rand))
+        except:
+            pl_letters[player] = ''
+            logging.debug("# Error 3 #: no letters found for {}".format(player))
+        all_letters.append(letter_rand)
+        return (letter_rand)
 
 @bot.command(description='Find out current letters owned by player', aliases=['curr', 'cu'])
 async def current(ctx):
@@ -97,8 +105,6 @@ async def hello(ctx):
 
 # Give a semi-random letter, to help people make words
 # TODO: Match proper frequencies for english words, see weight matrix above
-
-
 async def random_letter(author):
     curr = pl_letters[author]
     l = ''
