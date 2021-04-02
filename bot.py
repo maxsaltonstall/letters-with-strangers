@@ -23,7 +23,8 @@ valid_words = ['CAT', 'RAT', 'BAT', 'SAT', 'MAT', 'TALL', 'BALL', 'CALL', 'FALL'
                'SELL', 'SALE', 'SEAL', 'LEER', 'STELLAR', 'TREE', 'SEER', 'PEER', 'PEAR', 'APE',
                'TINE', 'SINE', 'SIN', 'NIT', 'RISE', 'LINT', 'TILL', 'SILL', 'TIN', 'TIRE', 'AND',
                'END', 'SAND', 'SEND', 'TEND', 'STAND', 'LET', 'TEN', 'RITE', 'BITE', 'SITE', 'LIT',
-               'FIT', 'SIT', 'TIT', 'TAT', 'PAT', 'STALL']
+               'FIT', 'SIT', 'TIT', 'TAT', 'PAT', 'STALL', 'TEST', 'SEE', 'SEA', 'TEE', 'TEA', 'LEE',
+               'TEAT', 'SEAR']
 words_i_know = frozenset(valid_words)  # used to speed up querying to see if word exists
 letter_weight = {  # each integer = percent chance * 10 to appear, 100 = 10%
 
@@ -63,9 +64,13 @@ class Player:
         for letter in letters:
             self.letters.append(letter)
 
-    def add_letters(self, letters):
-        for letter in letters:
-            self.letters.append(letter)
+    def cheat(self, letters):
+        try:
+            for letter in ["E", "A", "S", "T", "L", "N", "R"]:
+                self.letters.append(letter)
+            await ctx.send("You got the letters E, A, S, T, L, N, and R!")
+        except:
+          logging.debug("# Error 4 #: Error when cheating in letters")
 
     def remove_letter(self, letter):
         self.letters.remove(letter)
@@ -177,12 +182,8 @@ async def hello(ctx):
 @bot.command(description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
 async def cheat(ctx):
     player = ctx.author
-    game_player = load_player(player)
-    try:
-        game_player.add_letters(["E", "A", "S", "T", "L", "N", "R"])
-    except:
-        logging.debug("# Error 3 #: Error when cheating in letters")
-    await ctx.send("You got the letters E, A, S, T, L, N, and R!")
+    player.cheat(self, self.letters)
+    
 # async def check_letters(letters, player):
 
 
