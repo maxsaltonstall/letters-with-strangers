@@ -157,6 +157,7 @@ async def hello(ctx):
     player = ctx.author
     await ctx.send("Hello {}, and welcome to Letters With Strangers. I'm here to help you play the game".format(player))
 
+
 @bot.command(description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
 async def cheat(ctx):
     player = ctx.author
