@@ -58,14 +58,14 @@ class Player:
 
     def add_letter(self, letter):
         self.letters.append(letter)
-    
+
     def add_letters(self, letters):
         for letter in letters:
             self.letters.append(letter)
 
     def remove_letter(self, letter):
         self.letters.remove(letter)
-    
+
     def remove_letters(self, letters):
         for letter in letters:
             self.letters.remove(letter)
