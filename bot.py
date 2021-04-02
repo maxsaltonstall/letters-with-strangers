@@ -157,7 +157,19 @@ async def hello(ctx):
     player = ctx.author
     await ctx.send("Hello {}, and welcome to Letters With Strangers. I'm here to help you play the game".format(player))
 
-
+@bot.command(description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
+async def cheat(ctx):
+    player = ctx.author
+    game_player = load_player(player)
+    letters = ["E", "A", "S", "T", "L", "N", "R"]
+    for letter in letters:
+        try:
+            game_player.add_letter(letter)
+            logging.debug(f"{game_player.get_username()} cheated in a {letter}")
+        except:
+            logging.debug("# Error 3 #: no letters found for {}".format(letter))
+            all_letters.append(letter)
+    await ctx.send("You got the letters E, A, S, T, L, N, and R!")
 # async def check_letters(letters, player):
 
 
