@@ -14,7 +14,7 @@ cd letters-with-strangers
 
 Install pipenv (if you don't already have it installed)
 ```sh
-pip install pipenv
+pip3 install pipenv
 ```
 
 This project uses [pipenv](https://pypi.org/project/pipenv/) to manage packages and provide virtualization.
