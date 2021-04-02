@@ -125,7 +125,7 @@ async def current(ctx):
 @bot.command(description='Make a word')
 async def word(ctx, *args):
     player = load_player(ctx.author)
-    word = args[0]
+    word = args[0].toupper()
     if word in words_i_know:  # is this a word I think is valid
         points = len(word)
         player.add_points(points)
