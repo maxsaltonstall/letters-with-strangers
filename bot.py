@@ -181,6 +181,6 @@ async def cheat(ctx):
 # Give a semi-random letter, to help people make words
 # TODO: Match proper frequencies for english words, see weight matrix above
 async def random_letter():
-    ltr = random.choice(string.ascii_uppercase)
+    return random.choice(string.ascii_uppercase)
 
 bot.run(token)
