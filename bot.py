@@ -1,4 +1,4 @@
-import os, random, logging
+import os, random, logging, string
 
 from discord.ext import commands
 
