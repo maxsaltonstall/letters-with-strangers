@@ -188,27 +188,7 @@ async def cheat(ctx):
 
 # Give a semi-random letter, to help people make words
 # TODO: Match proper frequencies for english words, see weight matrix above
-async def random_letter():
-    ltr = ''
-    r = random.randint(1, 12)
-    if r == 1 or r == 2:
-        ltr = 'E'
-    elif r == 3:
-        ltr = 'A'
-    elif r == 4:
-        ltr = 'R'
-    elif r == 5:
-        ltr = 'T'
-    elif r == 6:
-        ltr = 'N'
-    elif r == 7:
-        ltr = 'S'
-    elif r == 8:
-        ltr = 'L'
-    elif r == 9:
-        ltr = 'I'
-    else:
-        ltr = random.choice(string.ascii_uppercase)
-    return ltr
+async def random_letter(): 
+    return random.choice(["E", "A", "R", "T", "N", "S", "L", "I"])
 
 bot.run(token)
