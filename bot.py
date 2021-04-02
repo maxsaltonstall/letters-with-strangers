@@ -59,8 +59,16 @@ class Player:
     def add_letter(self, letter):
         self.letters.append(letter)
 
+    def add_letters(self, letters):
+        for letter in letters:
+            self.letters.append(letter)
+
     def remove_letter(self, letter):
         self.letters.remove(letter)
+
+    def remove_letters(self, letters):
+        for letter in letters:
+            self.letters.remove(letter)
 
     def num_letters(self):
         return len(self.letters)
@@ -162,14 +170,10 @@ async def hello(ctx):
 async def cheat(ctx):
     player = ctx.author
     game_player = load_player(player)
-    letters = ["E", "A", "S", "T", "L", "N", "R"]
-    for letter in letters:
-        try:
-            game_player.add_letter(letter)
-            logging.debug(f"{game_player.get_username()} cheated in a {letter}")
-        except:
-            logging.debug("# Error 3 #: no letters found for {}".format(letter))
-            all_letters.append(letter)
+    try:
+        game_player.add_letters(["E", "A", "S", "T", "L", "N", "R"])
+    except:
+        logging.debug("# Error 3 #: Error when cheating in letters")
     await ctx.send("You got the letters E, A, S, T, L, N, and R!")
 # async def check_letters(letters, player):
 
