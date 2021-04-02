@@ -58,9 +58,17 @@ class Player:
 
     def add_letter(self, letter):
         self.letters.append(letter)
+    
+    def add_letters(self, letters):
+        for letter in letters:
+            self.letters.append(letter)
 
     def remove_letter(self, letter):
         self.letters.remove(letter)
+    
+    def remove_letters(self, letters):
+        for letter in letters:
+            self.letters.remove(letter)
 
     def num_letters(self):
         return len(self.letters)
@@ -158,6 +166,15 @@ async def hello(ctx):
     await ctx.send("Hello {}, and welcome to Letters With Strangers. I'm here to help you play the game".format(player))
 
 
+@bot.command(description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
+async def cheat(ctx):
+    player = ctx.author
+    game_player = load_player(player)
+    try:
+        game_player.add_letters(["E", "A", "S", "T", "L", "N", "R"])
+    except:
+        logging.debug("# Error 3 #: Error when cheating in letters")
+    await ctx.send("You got the letters E, A, S, T, L, N, and R!")
 # async def check_letters(letters, player):
 
 
