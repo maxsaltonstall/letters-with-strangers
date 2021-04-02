@@ -1,5 +1,4 @@
 import os, random, string, logging
-from collections import defaultdict
 
 from discord.ext import commands
 
@@ -134,8 +133,7 @@ async def word(ctx, *args):
             ## TODO: need to check only unique letters, avoid duplicates
             try:
                 player.remove_letter(ltr.upper())
-            except Exception as e:
-                # print('Failed to remove letter: ' + str(e))
+            except:
                 await ctx.send("# Error 1 #: Couldn't remove ''{}'' from {}'s letters".format(ltr, player))
     else:
         await ctx.send("# Error 2 #: I don't know the word ""{}"" yet, sorry".format(word))
@@ -145,6 +143,7 @@ async def word(ctx, *args):
 async def score(ctx):
     player = load_player(ctx.author)
     await ctx.send(f"{player}, your score is {player.get_score()}")
+
 
 @bot.command(description='Find out what letters this bot has given out')
 async def show_all(ctx):
