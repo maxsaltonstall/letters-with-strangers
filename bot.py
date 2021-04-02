@@ -59,25 +59,21 @@ class Player:
 
     def add_letter(self, letter):
         self.letters.append(letter)
-    
+
     def add_letters(self, letters):
         for letter in letters:
             self.letters.append(letter)
 
-    def cheat(self, letters):
+    def cheat(self):
         try:
-            for letter in ["E", "A", "S", "T", "L", "N", "R"]:
-                self.letters.append(letter)
-            await ctx.send("You got the letters E, A, S, T, L, N, and R!")
+            self.add_letters(["E", "A", "S", "T", "L", "N", "R"])
+            return("You got the letters E, A, S, T, L, N, and R!")
         except:
-          logging.debug("# Error 4 #: Error when cheating in letters")
+            logging.debug("# Error 4 #: Error when cheating in letters")
+            return("Unable to help you cheat, cheaty!")
 
     def remove_letter(self, letter):
         self.letters.remove(letter)
-    
-    def remove_letters(self, letters):
-        for letter in letters:
-            self.letters.remove(letter)
 
     def remove_letters(self, letters):
         for letter in letters:
@@ -182,9 +178,7 @@ async def hello(ctx):
 @bot.command(description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
 async def cheat(ctx):
     player = ctx.author
-    player.cheat(self, self.letters)
-    
-# async def check_letters(letters, player):
+    await ctx.send(player.cheat())
 
 
 # Give a semi-random letter, to help people make words
