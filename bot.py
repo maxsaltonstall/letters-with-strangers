@@ -1,4 +1,4 @@
-import os, random, string, logging
+import os, random, logging
 
 from discord.ext import commands
 
@@ -58,10 +58,6 @@ class Player:
 
     def add_letter(self, letter):
         self.letters.append(letter)
-    
-    def add_letters(self, letters):
-        for letter in letters:
-            self.letters.append(letter)
 
     def add_letters(self, letters):
         for letter in letters:
@@ -69,10 +65,6 @@ class Player:
 
     def remove_letter(self, letter):
         self.letters.remove(letter)
-    
-    def remove_letters(self, letters):
-        for letter in letters:
-            self.letters.remove(letter)
 
     def remove_letters(self, letters):
         for letter in letters:
@@ -188,7 +180,7 @@ async def cheat(ctx):
 
 # Give a semi-random letter, to help people make words
 # TODO: Match proper frequencies for english words, see weight matrix above
-async def random_letter(): 
+async def random_letter():
     return random.choice(["E", "A", "R", "T", "N", "S", "L", "I"])
 
 bot.run(token)
