@@ -1,4 +1,4 @@
-import os, random, string, logging
+import os, random, string, logging, jsonpickle
 
 from discord.ext import commands
 
@@ -33,6 +33,9 @@ letter_weight = {  # each integer = percent chance * 10 to appear, 100 = 10%
     "U": 36, "V": 10, "W": 13, "X": 2, "Y": 18, "Z": 2
 }
 
+# ensure state storage directory exists
+if not os.path.exists(".lws"):
+    os.makedirs(".lws")
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -44,62 +47,74 @@ async def on_ready():
     print('\nLet''s make some words')
 
 
-players = {}
-
-
 class Player:
 
     def __init__(self, user):
-        self.username = user.name
-        self.letters = []
-        self.score = 0
+        
+        self.name = format_name(user)
+        self.statefile = f".lws/{self.name}.json"
+        
+        try:
+            with open(self.statefile, 'r') as statefile:
+                self.state = jsonpickle.decode(statefile.read())
+        except FileNotFoundError:
+            logging.debug(f"statefile not found; initializing statefile for {self.name}")
+            self.state = {}
+            self.state["username"] = user.name
+            self.state["letters"] = []
+            self.state["score"] = 0
+            self.save_state()
 
     def get_letters(self):
-        return self.letters
+        return self.state["letters"]
 
     def add_letter(self, letter):
-        self.letters.append(letter)
-
-    def add_letters(self, letters):
-        for letter in letters:
-            self.letters.append(letter)
+        self.state["letters"].append(letter)
+        self.save_state()
 
     def cheat(self):
         try:
-            self.add_letters(["E", "A", "I", "S", "T", "L", "N", "R"])
-            return("You got the letters E, A, I, S, T, L, N, and R!")
+            self.remove_all_letters()
+            for ltr in ["E", "A", "I", "S", "T", "L", "N", "R"]:
+                self.add_letter(ltr)
+            return("Your hand is now: E, A, I, S, T, L, N, and R!")
         except:
-            logging.error("# Error 4 #: Error when cheating to get letters")
+            logging.error("# Error 4 #: Error when cheating in letters")
             return("Unable to help you cheat, cheaty!")
 
     def remove_letter(self, letter):
-        self.letters.remove(letter)
+        self.state["letters"].remove(letter.upper())
+        self.save_state()
 
     def remove_letters(self, letters):
         for letter in letters:
-            self.letters.remove(letter)
+            self.remove_letter(letter)
+
+    def remove_all_letters(self):
+        self.state["letters"] = []
+        self.save_state()
 
     def num_letters(self):
-        return len(self.letters)
+        return len(self.state["letters"])
 
     def get_username(self):
-        return self.username
+        return self.state["username"]
 
     def add_points(self, points):
-        self.score += points
+        self.state["score"] += points
+        self.save_state()
 
     def get_score(self):
-        return self.score
+        return self.state["score"]
+
+    def save_state(self):
+        pickled = jsonpickle.encode(self.state)
+        with open(self.statefile, 'w') as statefile:
+            statefile.write(pickled)
+            statefile.close()
 
     def __str__(self):
         return self.get_username()
-
-
-def load_player(user):
-    if not format_name(user) in players:
-        players[format_name(user)] = Player(user)
-
-    return players[format_name(user)]
 
 
 def format_name(user):
@@ -110,7 +125,7 @@ def format_name(user):
 # Players can request a new letter from the bot
 # Currently up to 8 letters per player
 async def get(ctx):
-    player = load_player(ctx.author)
+    player = Player(ctx.author)
     username = player.get_username()
     if player.num_letters() >= HANDLIMIT:
         await ctx.send("{}, you already have a full hand of letters".format(username))
@@ -121,16 +136,16 @@ async def get(ctx):
             player.add_letter(letter_rand)
             logging.debug("gave {} to {}".format(letter_rand, username))
             await ctx.send("{}, you can have a {}".format(username, letter_rand))
-        except:
-            logging.error("# Error 3 #: no letters found for {}".format(username))
-            return
+        except Exception as e:
+            logging.error(f"# Error 3 #: no letters found for {username}")
+            logging.exception(str(e))
         all_letters.append(letter_rand)
         return (letter_rand)
 
 
 @bot.command(brief='See what letters you have now', description='Find out current letters owned by player', aliases=['curr', 'cu'])
 async def current(ctx):
-    player = load_player(ctx.author)
+    player = Player(ctx.author)
     logging.debug("Fetching letters for {}".format(player))
     try:
         letter_list = player.get_letters()
@@ -142,7 +157,7 @@ async def current(ctx):
 
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
 async def word(ctx, *args):
-    player = load_player(ctx.author)
+    player = Player(ctx.author)
     word = args[0].upper()
     if word in words_i_know:  # is this a word I think is valid
         points = len(word)
@@ -151,16 +166,18 @@ async def word(ctx, *args):
         for ltr in word:  # try to remvoe letters in word from player's inventory
             ## TODO: need to check only unique letters, avoid duplicates
             try:
-                player.remove_letter(ltr.upper())
+                player.remove_letter(ltr)
             except:
-                logging.error("# Error 1 #: Couldn't remove ''{}'' from {}'s letters".format(ltr, player))
+                msg = f"# Error 1 #: Couldn't remove '{ltr}' from {player}'s letters"
+                logging.error(msg)
+                await ctx.send(msg)
     else:
         logging.error("# Error 2 #: I don't know the word ""{}"" yet, sorry".format(word))
 
 
 @bot.command(brief='Show me my progress', description='Get my score')
 async def score(ctx):
-    player = load_player(ctx.author)
+    player = Player(ctx.author)
     await ctx.send(f"{player}, your score is {player.get_score()}")
 
 
@@ -178,7 +195,7 @@ async def hello(ctx):
 
 @bot.command(brief='Kick-start your LWS play', description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
 async def cheat(ctx):
-    player = load_player(ctx.author)
+    player = Player(ctx.author)
     await ctx.send(player.cheat())
 
 
