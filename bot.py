@@ -69,7 +69,7 @@ class Player:
             self.add_letters(["E", "A", "S", "T", "L", "N", "R"])
             return("You got the letters E, A, S, T, L, N, and R!")
         except:
-            logging.debug("# Error 4 #: Error when cheating in letters")
+            logging.debug("# Error 4 #: Error when cheating to get letters")
             return("Unable to help you cheat, cheaty!")
 
     def remove_letter(self, letter):
@@ -177,7 +177,7 @@ async def hello(ctx):
 
 @bot.command(description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
 async def cheat(ctx):
-    player = ctx.author
+    player = load_player(ctx.author)
     await ctx.send(player.cheat())
 
 
