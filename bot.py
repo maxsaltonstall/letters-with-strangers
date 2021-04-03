@@ -76,9 +76,10 @@ class Player:
 
     def cheat(self):
         try:
+            self.remove_all_letters()
             for ltr in ["E", "A", "S", "T", "L", "N", "R"]:
                 self.add_letter(ltr)
-            return("You got the letters E, A, S, T, L, N, and R!")
+            return("Your hand is now: E, A, S, T, L, N, and R!")
         except:
             logging.error("# Error 4 #: Error when cheating in letters")
             return("Unable to help you cheat, cheaty!")
@@ -90,6 +91,10 @@ class Player:
     def remove_letters(self, letters):
         for letter in letters:
             self.remove_letter(letter)
+
+    def remove_all_letters(self):
+        self.state["letters"] = []
+        self.save_state()
 
     def num_letters(self):
         return len(self.state["letters"])
