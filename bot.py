@@ -109,4 +109,10 @@ async def cheat(ctx):
     player = Player(ctx.author)
     await ctx.send(player.cheat())
 
+
+@bot.command(brief='[debug] Clear your hand', description='Remove all letters from your hand. For testing/debugging purposes.')
+async def purge(ctx):
+    player = Player(ctx.author)
+    await ctx.send(player.purge())
+
 bot.run(token)

@@ -31,7 +31,7 @@ class Player:
             self.save_state()
             return(f"{self.state['username']}, you can have a {letter}")
 
-    def cheat(self):
+    def cheat(self):  # for testing/developing
         try:
             self.state["letters"] = ["A", "E", "I", "L", "N", "R", "S", "T"]
             self.save_state()
@@ -40,6 +40,11 @@ class Player:
             logging.error("# Error 4 #: Error when cheating in letters")
             logging.exception(str(e))
             return("Unable to help you cheat, cheaty!")
+
+    def purge(self):  # for testing/developing
+        self.state["letters"] = []
+        self.save_state()
+        return("Poof! All your letters are gone.")
 
     def remove_letter(self, letter):
         self.state["letters"].remove(letter.upper())
