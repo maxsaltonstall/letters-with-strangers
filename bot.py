@@ -24,7 +24,7 @@ valid_words = ['CAT', 'RAT', 'BAT', 'SAT', 'MAT', 'TALL', 'BALL', 'CALL', 'FALL'
                'TINE', 'SINE', 'SIN', 'NIT', 'RISE', 'LINT', 'TILL', 'SILL', 'TIN', 'TIRE', 'AND',
                'END', 'SAND', 'SEND', 'TEND', 'STAND', 'LET', 'TEN', 'RITE', 'BITE', 'SITE', 'LIT',
                'FIT', 'SIT', 'TIT', 'TAT', 'PAT', 'STALL', 'TEST', 'SEE', 'SEA', 'TEE', 'TEA', 'LEE',
-               'TEAT', 'SEAR']
+               'TEAT', 'SEAR', 'STILl', 'STALL']
 words_i_know = frozenset(valid_words)  # used to speed up querying to see if word exists
 letter_weight = {  # each integer = percent chance * 10 to appear, 100 = 10%
 
@@ -66,10 +66,10 @@ class Player:
 
     def cheat(self):
         try:
-            self.add_letters(["E", "A", "S", "T", "L", "N", "R"])
-            return("You got the letters E, A, S, T, L, N, and R!")
+            self.add_letters(["E", "A", "I", "S", "T", "L", "N", "R"])
+            return("You got the letters E, A, I, S, T, L, N, and R!")
         except:
-            logging.debug("# Error 4 #: Error when cheating to get letters")
+            logging.error("# Error 4 #: Error when cheating to get letters")
             return("Unable to help you cheat, cheaty!")
 
     def remove_letter(self, letter):
@@ -122,7 +122,8 @@ async def get(ctx):
             logging.debug("gave {} to {}".format(letter_rand, username))
             await ctx.send("{}, you can have a {}".format(username, letter_rand))
         except:
-            logging.debug("# Error 3 #: no letters found for {}".format(username))
+            logging.error("# Error 3 #: no letters found for {}".format(username))
+            return
         all_letters.append(letter_rand)
         return (letter_rand)
 
@@ -152,9 +153,9 @@ async def word(ctx, *args):
             try:
                 player.remove_letter(ltr.upper())
             except:
-                await ctx.send("# Error 1 #: Couldn't remove ''{}'' from {}'s letters".format(ltr, player))
+                logging.error("# Error 1 #: Couldn't remove ''{}'' from {}'s letters".format(ltr, player))
     else:
-        await ctx.send("# Error 2 #: I don't know the word ""{}"" yet, sorry".format(word))
+        logging.error("# Error 2 #: I don't know the word ""{}"" yet, sorry".format(word))
 
 
 @bot.command(brief='Show me my progress', description='Get my score')
@@ -185,7 +186,7 @@ async def cheat(ctx):
 # TODO: Match proper frequencies for english words, see weight matrix above
 async def random_letter():
     ltr = ''
-    r = random.randint(1, 12)
+    r = random.randint(1, 13)
     if r == 1 or r == 2:
         ltr = 'E'
     elif r == 3:
