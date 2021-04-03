@@ -1,5 +1,6 @@
 import random, string
 
+
 class Letter:
     letter_weight = {  # each integer = percent chance * 10 to appear, 100 = 10%
         "A": 85, "B": 20, "C": 45, "D": 34, "E": 112, "F": 18, "G": 25, "H": 30, "I": 75, "J": 2,
