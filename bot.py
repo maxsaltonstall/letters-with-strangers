@@ -1,6 +1,4 @@
-import os, random, string, logging, jsonpickle
-from player import Player
-
+import os, random, string, logging
 from player import Player
 
 from discord.ext import commands
