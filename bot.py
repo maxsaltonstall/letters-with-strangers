@@ -106,7 +106,7 @@ def format_name(user):
     return f"{user.name}#{user.discriminator}"
 
 
-@bot.command(description='For getting new letters')
+@bot.command(brief='Buy a new letter', description='For getting new letters')
 # Players can request a new letter from the bot
 # Currently up to 8 letters per player
 async def get(ctx):
@@ -127,7 +127,7 @@ async def get(ctx):
         return (letter_rand)
 
 
-@bot.command(description='Find out current letters owned by player', aliases=['curr', 'cu'])
+@bot.command(brief='See what letters you have now', description='Find out current letters owned by player', aliases=['curr', 'cu'])
 async def current(ctx):
     player = load_player(ctx.author)
     logging.debug("Fetching letters for {}".format(player))
@@ -139,7 +139,7 @@ async def current(ctx):
     await ctx.send("{} your letters are {}".format(player, str(letter_list)))
 
 
-@bot.command(description='Make a word')
+@bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
 async def word(ctx, *args):
     player = load_player(ctx.author)
     word = args[0].upper()
@@ -157,25 +157,25 @@ async def word(ctx, *args):
         await ctx.send("# Error 2 #: I don't know the word ""{}"" yet, sorry".format(word))
 
 
-@bot.command(description='Get my score')
+@bot.command(brief='Show me my progress', description='Get my score')
 async def score(ctx):
     player = load_player(ctx.author)
     await ctx.send(f"{player}, your score is {player.get_score()}")
 
 
-@bot.command(description='Find out what letters this bot has given out')
+@bot.command(brief='All the letters bot has given', description='Find out what letters this bot has given out')
 async def show_all(ctx):
     logging.debug("Full letter output requested")
     await ctx.send(str(all_letters))
 
 
-@bot.command(description='Hello and introductions')
+@bot.command(brief='Greetings stranger', description='Hello and introductions')
 async def hello(ctx):
     player = ctx.author
     await ctx.send("Hello {}, and welcome to Letters With Strangers. I'm here to help you play the game".format(player))
 
 
-@bot.command(description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
+@bot.command(brief='Kick-start your LWS play', description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
 async def cheat(ctx):
     player = ctx.author
     await ctx.send(player.cheat())
