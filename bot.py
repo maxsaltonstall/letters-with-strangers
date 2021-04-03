@@ -1,5 +1,4 @@
 import os, random, string, logging
-
 from player import Player
 
 from discord.ext import commands
@@ -8,8 +7,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 token = os.environ["TOKEN"]
-
-HANDLIMIT = 8
 
 description = '''A bot to help strangers make words out of letters'''
 
@@ -54,21 +51,9 @@ async def on_ready():
 # Currently up to 8 letters per player
 async def get(ctx):
     player = Player(ctx.author)
-    username = player.get_username()
-    if player.num_letters() >= HANDLIMIT:
-        await ctx.send("{}, you already have a full hand of letters".format(username))
-        return
-    else:
-        letter_rand = await random_letter()
-        try:
-            player.add_letter(letter_rand)
-            logging.debug("gave {} to {}".format(letter_rand, username))
-            await ctx.send("{}, you can have a {}".format(username, letter_rand))
-        except Exception as e:
-            logging.error(f"# Error 3 #: no letters found for {username}")
-            logging.exception(str(e))
-        all_letters.append(letter_rand)
-        return (letter_rand)
+    letter_rand = await random_letter()
+    await ctx.send(player.add_letter(letter_rand))
+    all_letters.append(letter_rand)
 
 
 @bot.command(brief='See what letters you have now', description='Find out current letters owned by player', aliases=['curr', 'cu'])
@@ -78,8 +63,9 @@ async def current(ctx):
     try:
         letter_list = player.get_letters()
         logging.debug("got letters for {}: {}".format(player, str(letter_list)))
-    except:
-        letter_list = []
+    except Exception as e:
+        logging.error(f"# Error 5 #: unable to fetch letters for {player.get_username()}")
+        logging.exception(str(e))
     await ctx.send("{} your letters are {}".format(player, str(letter_list)))
 
 
@@ -101,6 +87,7 @@ async def word(ctx, *args):
                 await ctx.send(msg)
     else:
         msg = f"# Error 2 #: I don't know the word '{word}' yet, sorry"
+        await ctx.send(msg)
         logging.info(msg)
 
 
