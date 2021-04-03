@@ -126,21 +126,9 @@ def format_name(user):
 # Currently up to 8 letters per player
 async def get(ctx):
     player = Player(ctx.author)
-    username = player.get_username()
-    if player.num_letters() >= HANDLIMIT:
-        await ctx.send("{}, you already have a full hand of letters".format(username))
-        return
-    else:
-        letter_rand = await random_letter()
-        try:
-            player.add_letter(letter_rand)
-            logging.debug("gave {} to {}".format(letter_rand, username))
-            await ctx.send("{}, you can have a {}".format(username, letter_rand))
-        except Exception as e:
-            logging.error("# Error 3 #: no letters found for {}".format(username))
-            logging.exception(str(e))
-        all_letters.append(letter_rand)
-        return (letter_rand)
+    letter_rand = await random_letter()
+    await ctx.send(player.add_letter(letter_rand))
+    all_letters.append(letter_rand)
 
 
 @bot.command(description='Find out current letters owned by player', aliases=['curr', 'cu'])
