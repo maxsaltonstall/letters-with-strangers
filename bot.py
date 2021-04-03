@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 load_dotenv()
 token = os.environ["TOKEN"]
 
-HANDLIMIT = 8
-
 description = '''A bot to help strangers make words out of letters'''
 
 # set the prefix bot will watch for
@@ -65,8 +63,9 @@ async def current(ctx):
     try:
         letter_list = player.get_letters()
         logging.debug("got letters for {}: {}".format(player, str(letter_list)))
-    except:
-        letter_list = []
+    except Exception as e:
+        logging.error(f"# Error 5 #: unable to fetch letters for {player.get_username()}")
+        logging.exception(str(e))
     await ctx.send("{} your letters are {}".format(player, str(letter_list)))
 
 
