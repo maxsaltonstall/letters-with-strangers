@@ -24,7 +24,7 @@ valid_words = ['CAT', 'RAT', 'BAT', 'SAT', 'MAT', 'TALL', 'BALL', 'CALL', 'FALL'
                'TINE', 'SINE', 'SIN', 'NIT', 'RISE', 'LINT', 'TILL', 'SILL', 'TIN', 'TIRE', 'AND',
                'END', 'SAND', 'SEND', 'TEND', 'STAND', 'LET', 'TEN', 'RITE', 'BITE', 'SITE', 'LIT',
                'FIT', 'SIT', 'TIT', 'TAT', 'PAT', 'STALL', 'TEST', 'SEE', 'SEA', 'TEE', 'TEA', 'LEE',
-               'TEAT', 'SEAR']
+               'TEAT', 'SEAR', 'STILl', 'STALL']
 words_i_know = frozenset(valid_words)  # used to speed up querying to see if word exists
 letter_weight = {  # each integer = percent chance * 10 to appear, 100 = 10%
 
@@ -75,9 +75,9 @@ class Player:
     def cheat(self):
         try:
             self.remove_all_letters()
-            for ltr in ["E", "A", "S", "T", "L", "N", "R"]:
+            for ltr in ["E", "A", "I", "S", "T", "L", "N", "R"]:
                 self.add_letter(ltr)
-            return("Your hand is now: E, A, S, T, L, N, and R!")
+            return("Your hand is now: E, A, I, S, T, L, N, and R!")
         except:
             logging.error("# Error 4 #: Error when cheating in letters")
             return("Unable to help you cheat, cheaty!")
@@ -137,7 +137,7 @@ async def get(ctx):
             logging.debug("gave {} to {}".format(letter_rand, username))
             await ctx.send("{}, you can have a {}".format(username, letter_rand))
         except Exception as e:
-            logging.error("# Error 3 #: no letters found for {}".format(username))
+            logging.error(f"# Error 3 #: no letters found for {username}")
             logging.exception(str(e))
         all_letters.append(letter_rand)
         return (letter_rand)
@@ -172,7 +172,7 @@ async def word(ctx, *args):
                 logging.error(msg)
                 await ctx.send(msg)
     else:
-        await ctx.send("# Error 2 #: I don't know the word ""{}"" yet, sorry".format(word))
+        logging.error("# Error 2 #: I don't know the word ""{}"" yet, sorry".format(word))
 
 
 @bot.command(brief='Show me my progress', description='Get my score')
@@ -203,7 +203,7 @@ async def cheat(ctx):
 # TODO: Match proper frequencies for english words, see weight matrix above
 async def random_letter():
     ltr = ''
-    r = random.randint(1, 12)
+    r = random.randint(1, 13)
     if r == 1 or r == 2:
         ltr = 'E'
     elif r == 3:
