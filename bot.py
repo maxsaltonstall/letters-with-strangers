@@ -47,8 +47,6 @@ async def on_ready():
     print('\nLet''s make some words')
 
 
-players = {}
-
 class Player:
 
     def __init__(self, user):
@@ -57,9 +55,9 @@ class Player:
         self.statefile = f".lws/{self.name}.json"
         
         try:
-            with open(self.statefile,'r') as statefile:
+            with open(self.statefile, 'r') as statefile:
                 self.state = jsonpickle.decode(statefile.read())
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             logging.debug(f"statefile not found; initializing statefile for {self.name}")
             self.state = {}
             self.state["username"] = user.name
@@ -111,7 +109,7 @@ class Player:
 
     def save_state(self):
         pickled = jsonpickle.encode(self.state)
-        with open(self.statefile,'w') as statefile:
+        with open(self.statefile, 'w') as statefile:
             statefile.write(pickled)
             statefile.close()
 
