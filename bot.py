@@ -87,6 +87,7 @@ async def word(ctx, *args):
                 await ctx.send(msg)
     else:
         msg = f"# Error 2 #: I don't know the word '{word}' yet, sorry"
+        await ctx.send(msg)
         logging.info(msg)
 
 
