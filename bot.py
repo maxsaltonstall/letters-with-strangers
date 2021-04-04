@@ -18,13 +18,14 @@ all_letters = []  # list to store all letters deployed, for testing
 # TODO: replace with a real and complete word list, maybe scrabble? https://www.wordgamedictionary.com/sowpods/
 valid_words = ['CAT', 'RAT', 'BAT', 'SAT', 'MAT', 'TALL', 'BALL', 'CALL', 'FALL', 'FAR', 'TAR',
                'BAR', 'CAR', 'CAB', 'TAB', 'LAB', 'GNAT', 'TAN', 'CAN', 'BAN', 'RAN', 'BASS',
-               'MAN', 'APP', 'TART', 'FART', 'THAT', 'SEEN', 'LANE', 'TEEN', 'TALE', 'TEAL', 'FELL'
+               'MAN', 'APP', 'TART', 'FART', 'THAT', 'SEEN', 'LANE', 'TEEN', 'TALE', 'TEAL', 'FELL',
                'TELL', 'SET', 'NET', 'EAT', 'BEAT', 'NEAT', 'SEAT', 'TEAR', 'STAR', 'LANE', 'ARE',
                'SELL', 'SALE', 'SEAL', 'LEER', 'STELLAR', 'TREE', 'SEER', 'PEER', 'PEAR', 'APE',
                'TINE', 'SINE', 'SIN', 'NIT', 'RISE', 'LINT', 'TILL', 'SILL', 'TIN', 'TIRE', 'AND',
                'END', 'SAND', 'SEND', 'TEND', 'STAND', 'LET', 'TEN', 'RITE', 'BITE', 'SITE', 'LIT',
                'FIT', 'SIT', 'TIT', 'TAT', 'PAT', 'STALL', 'TEST', 'SEE', 'SEA', 'TEE', 'TEA', 'LEE',
-               'TEAT', 'SEAR', 'STILl', 'STALL']
+               'TEAT', 'SEAR', 'STILl', 'STALL', 'SNARL', 'TARNISH', 'TAIL', 'SAIL', 'FAIL', 'SALT',
+               'TILT', 'STEAL', 'STEEL', 'TENT', 'TENET', 'RAIN', 'REIN']
 words_i_know = frozenset(valid_words)  # used to speed up querying to see if word exists
 
 # ensure state storage directory exists
