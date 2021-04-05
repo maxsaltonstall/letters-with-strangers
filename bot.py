@@ -111,6 +111,12 @@ async def cheat(ctx):
     await ctx.send(player.cheat())
 
 
+@bot.command(breif="Shuffles your hand", description="Shuffles your hand!")
+async def shuffle(ctx):
+    player = Player(ctx.author)
+    await ctx.send(player.shuffle_letters())
+
+
 @bot.command(brief='[debug] Clear your hand', description='Remove all letters from your hand. For testing/debugging purposes.')
 async def purge(ctx):
     player = Player(ctx.author)

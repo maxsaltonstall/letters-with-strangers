@@ -1,4 +1,4 @@
-import logging, jsonpickle
+import logging, jsonpickle, random
 
 
 class Player:
@@ -53,6 +53,11 @@ class Player:
     def remove_letters(self, letters):
         for letter in letters:
             self.remove_letter(letter)
+
+    def shuffle_letters(self):
+        random.shuffle(self.state["letters"])
+        self.save_state()
+        return(f"Shuffled your letters! They are now {self.state['letters']}")
 
     def num_letters(self):
         return len(self.state["letters"])
