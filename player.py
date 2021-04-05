@@ -31,10 +31,6 @@ class Player:
             self.save_state()
             return(f"{self.state['username']}, you can have a {letter}")
 
-    def add_letters(self, letters):
-        for letter in letters:
-            self.add_letter(letter)
-
     def cheat(self):  # for testing/developing
         try:
             self.state["letters"] = ["A", "E", "I", "L", "N", "R", "S", "T"]
@@ -59,11 +55,9 @@ class Player:
             self.remove_letter(letter)
 
     def shuffle_letters(self):
-        letters = self.state["letters"]
-        random.shuffle(letters)
-        self.purge()
-        self.add_letters(letters)
-        return(f"Shuffled your letters! You now have: {self.get_letters()}")
+        random.shuffle(self.state["letters"])
+        self.save_state()
+        return(f"Shuffled your letters! They are now {self.state['letters']}")
 
     def num_letters(self):
         return len(self.state["letters"])
