@@ -1,7 +1,7 @@
 {
     "apps": [
         {
-            "name": "lws",
+            "name": "lws-bot",
             "script": "bot.py",
             "interpreter": "python"
         }
