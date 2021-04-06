@@ -16,8 +16,10 @@ class Player:
             self.state = {}
             self.state["username"] = user.name
             self.state["letters"] = []
-            self.state["score"] = 0
+            self.state["score"] = 0      # experience
+            self.state["glyphs"] = 0     # currency
             self.state["handlimit"] = 8  # default for new players
+            self.state["letter_xp"] = defaultdict(int) # track progress per letter + wildcard
             self.save_state()
 
     def get_letters(self):
@@ -71,6 +73,9 @@ class Player:
 
     def get_score(self):
         return self.state["score"]
+               
+    def get_glyphs(self):
+        return self.state["glyphs"]
 
     def save_state(self):
         pickled = jsonpickle.encode(self.state)
