@@ -21,6 +21,11 @@ gcloud builds submit --tag="gcr.io/${PROJECT_ID}/lws" ..
 gcloud compute instances update-container ${LWS_SERVER} --zone=us-central1-a \
 --container-image=gcr.io/${PROJECT_ID}/lws:latest
 ```
+#### or
+```sh
+source .deploy_env
+gcloud builds submit --config=deploy_to_staging.cloudbuild.yaml \ --substitutions=_STAGING_INSTANCE=${LWS_SERVER}
+```
 This also takes a few minutes; the instance will be temporarily stopped while the container is updated.
 _warning: this will purge all game state from the deployed server_ 
 (TODO: support external state)
