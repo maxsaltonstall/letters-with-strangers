@@ -2,6 +2,7 @@ import logging, jsonpickle, random
 
 from collections import defaultdict
 
+
 class Player:
 
     def __init__(self, user):
