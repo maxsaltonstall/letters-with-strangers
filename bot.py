@@ -1,6 +1,7 @@
 import os, logging
 from player import Player
 from letter import Letter
+from dictionary import Dictionary
 
 from discord.ext import commands
 
@@ -8,6 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 token = os.environ["TOKEN"]
+lexicon = os.environ.get("LEXICON", "sowpods")  # specify a dictionary; default to SOWPODS
 
 description = '''A bot to help strangers make words out of letters'''
 
@@ -15,19 +17,6 @@ description = '''A bot to help strangers make words out of letters'''
 bot = commands.Bot(command_prefix='..', description=description)
 
 all_letters = []  # list to store all letters deployed, for testing
-# TODO: replace with a real and complete word list, maybe scrabble? https://www.wordgamedictionary.com/sowpods/
-valid_words = ['CAT', 'RAT', 'BAT', 'SAT', 'MAT', 'TALL', 'BALL', 'CALL', 'FALL', 'FAR', 'TAR',
-               'BAR', 'CAR', 'CAB', 'TAB', 'LAB', 'GNAT', 'TAN', 'CAN', 'BAN', 'RAN', 'BASS',
-               'MAN', 'APP', 'TART', 'FART', 'THAT', 'SEEN', 'LANE', 'TEEN', 'TALE', 'TEAL', 'FELL',
-               'TELL', 'SET', 'NET', 'EAT', 'BEAT', 'NEAT', 'SEAT', 'TEAR', 'STAR', 'LANE', 'ARE',
-               'SELL', 'SALE', 'SEAL', 'LEER', 'STELLAR', 'TREE', 'SEER', 'PEER', 'PEAR', 'APE',
-               'TINE', 'SINE', 'SIN', 'NIT', 'RISE', 'LINT', 'TILL', 'SILL', 'TIN', 'TIRE', 'AND',
-               'END', 'SAND', 'SEND', 'TEND', 'STAND', 'LET', 'TEN', 'RITE', 'BITE', 'SITE', 'LIT',
-               'FIT', 'SIT', 'TIT', 'TAT', 'PAT', 'STALL', 'TEST', 'SEE', 'SEA', 'TEE', 'TEA', 'LEE',
-               'TEAT', 'SEAR', 'STILL', 'STOLE', 'SNARL', 'TARNISH', 'TAIL', 'SAIL', 'FAIL', 'SALT',
-               'TILT', 'STEAL', 'STEEL', 'TENT', 'TENET', 'RAIN', 'REIN', 'EAST', 'RAIL', 'TRELLIS',
-               'FILTER', 'TOLL', 'SOLE', 'MAIL', 'NAIL', 'RID', 'ROD', 'COD', 'ROT', 'RINSE']
-words_i_know = frozenset(valid_words)  # used to speed up querying to see if word exists
 
 # ensure state storage directory exists
 if not os.path.exists(".lws"):
@@ -70,7 +59,8 @@ async def current(ctx):
 async def word(ctx, *args):
     player = Player(ctx.author)
     word = args[0].upper()
-    if word in words_i_know:  # is this a word I think is valid
+    dictionary = Dictionary(lexicon)
+    if dictionary.check_word(word):  # is this a word I think is valid
         points = len(word)
         player.add_points(points)
         player.add_money(points)
