@@ -1,5 +1,6 @@
 import logging, jsonpickle, random
 
+from collections import defaultdict
 
 class Player:
 
@@ -16,10 +17,10 @@ class Player:
             self.state = {}
             self.state["username"] = user.name
             self.state["letters"] = []
-            self.state["score"] = 0      # experience
-            self.state["money"] = 0      # currency
+            self.state["score"] = 0  # experience
+            self.state["money"] = 0  # currency
             self.state["handlimit"] = 8  # default for new players
-            self.state["letter_xp"] = defaultdict(int) # track progress per letter + wildcard
+            self.state["letter_xp"] = defaultdict(int)  # track progress per letter + wildcard
             self.save_state()
 
     def get_letters(self):
@@ -77,7 +78,7 @@ class Player:
 
     def add_money(self, cash):
         self.state["money"] += cash
-        self.save_state()    
+        self.save_state()
                
     def get_money(self):
         return self.state["money"]
