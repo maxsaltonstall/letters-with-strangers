@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 token = os.environ["TOKEN"]
 
 description = '''A bot to help strangers make words out of letters'''
