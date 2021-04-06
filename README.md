@@ -44,28 +44,7 @@ python -m flake8
 ```
 
 ## Monitoring with PM2
-PM2 is a cool monitoring application. You can install PM2 with `npm i -g pm2`, assuming you have Node.JS installed.
-
-Go into the pipenv with
-```sh
-python -m pipenv shell
-```
-
-You can start monitoring with
-```sh
-npx pm2 start pm2.json --watch 
-# get/stream logs with 
-npx pm2 logs
-# or, write them to a file with:
-npx pm2 logs 1> latest.log 2>&1
-# or to stream output to the terminal
-npx pm2 start pm2.json --watch --no-daemon
-```
-
-To stop the program, just do:
-```sh
-npx pm2 stop lws-bot
-```
+PM2 is a monitoring/running/daemon tool. You can install PM2 with `npm i -g pm2`, assuming you have Node.JS installed. Look at `docs/PM2.md` for info.
 
 ## Running locally in Docker
 ```sh

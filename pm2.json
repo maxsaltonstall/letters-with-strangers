@@ -2,8 +2,13 @@
     "apps": [
         {
             "name": "lws-bot",
-            "script": "bot.py",
-            "interpreter": "python"
+            "script": "./bot.py",
+            "interpreter": "python",
+            "instances": "max",
+            "exec_mode": "cluster",
+            "autorestart": true,
+            "watch": true,
+            "ignore_watch": [".lws", "__pycache__"]
         }
     ]
 }
