@@ -17,7 +17,7 @@ class Player:
             self.state["username"] = user.name
             self.state["letters"] = []
             self.state["score"] = 0      # experience
-            self.state["glyphs"] = 0     # currency
+            self.state["money"] = 0      # currency
             self.state["handlimit"] = 8  # default for new players
             self.state["letter_xp"] = defaultdict(int) # track progress per letter + wildcard
             self.save_state()
@@ -36,6 +36,7 @@ class Player:
     def cheat(self):  # for testing/developing
         try:
             self.state["letters"] = ["A", "E", "I", "L", "N", "R", "S", "T"]
+            self.state["money"] += 1000
             self.save_state()
             return("Your hand is now: A, E, I, L, N, R, S, and T!")
         except Exception as e:
@@ -73,9 +74,13 @@ class Player:
 
     def get_score(self):
         return self.state["score"]
+
+    def add_money(self, cash):
+        self.state["money"] += cash
+        self.save_state()    
                
-    def get_glyphs(self):
-        return self.state["glyphs"]
+    def get_money(self):
+        return self.state["money"]
 
     def save_state(self):
         pickled = jsonpickle.encode(self.state)
