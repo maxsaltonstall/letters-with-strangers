@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 token = os.environ["TOKEN"]
-lexicon = os.environ.get("LEXICON","sowpods")  # specify a dictionary; default to SOWPODS
+lexicon = os.environ.get("LEXICON", "sowpods")  # specify a dictionary; default to SOWPODS
 
 description = '''A bot to help strangers make words out of letters'''
 
