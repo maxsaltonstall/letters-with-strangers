@@ -72,6 +72,7 @@ async def word(ctx, *args):
     if word in words_i_know:  # is this a word I think is valid
         points = len(word)
         player.add_points(points)
+        player.add_money(points)
         await ctx.send("{} formed the word ""{}"" and scored {} points".format(player, word, points))
         for ltr in word:  # try to remvoe letters in word from player's inventory
             ## TODO: need to check only unique letters, avoid duplicates
@@ -90,7 +91,7 @@ async def word(ctx, *args):
 @bot.command(brief='Show me my progress', description='Get my score')
 async def score(ctx):
     player = Player(ctx.author)
-    await ctx.send(f"{player}, your score is {player.get_score()}")
+    await ctx.send(f"{player}, your score is {player.get_score()}, and you have {player.get_money()} glyphs to spend")
 
 
 @bot.command(brief='All the letters bot has given', description='Find out what letters this bot has given out')
