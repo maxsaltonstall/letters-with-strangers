@@ -24,8 +24,9 @@ valid_words = ['CAT', 'RAT', 'BAT', 'SAT', 'MAT', 'TALL', 'BALL', 'CALL', 'FALL'
                'TINE', 'SINE', 'SIN', 'NIT', 'RISE', 'LINT', 'TILL', 'SILL', 'TIN', 'TIRE', 'AND',
                'END', 'SAND', 'SEND', 'TEND', 'STAND', 'LET', 'TEN', 'RITE', 'BITE', 'SITE', 'LIT',
                'FIT', 'SIT', 'TIT', 'TAT', 'PAT', 'STALL', 'TEST', 'SEE', 'SEA', 'TEE', 'TEA', 'LEE',
-               'TEAT', 'SEAR', 'STILl', 'STALL', 'SNARL', 'TARNISH', 'TAIL', 'SAIL', 'FAIL', 'SALT',
-               'TILT', 'STEAL', 'STEEL', 'TENT', 'TENET', 'RAIN', 'REIN']
+               'TEAT', 'SEAR', 'STILL', 'STOLE', 'SNARL', 'TARNISH', 'TAIL', 'SAIL', 'FAIL', 'SALT',
+               'TILT', 'STEAL', 'STEEL', 'TENT', 'TENET', 'RAIN', 'REIN', 'EAST', 'RAIL', 'TRELLIS',
+               'FILTER', 'TOLL', 'SOLE', 'MAIL', 'NAIL', 'RID', 'ROD', 'COD', 'ROT', 'RINSE']
 words_i_know = frozenset(valid_words)  # used to speed up querying to see if word exists
 
 # ensure state storage directory exists
