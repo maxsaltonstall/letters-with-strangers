@@ -142,3 +142,6 @@ cython_debug/
 
 # letters with strangers deployment environment vars
 tools/.deploy_env
+
+# developer tools
+.vscode
