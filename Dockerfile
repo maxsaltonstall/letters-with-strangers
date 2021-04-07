@@ -2,7 +2,8 @@ FROM python:3.9-slim
 
 RUN pip install pipenv
 
-COPY *.py Pipfile Pipfile.lock data /
+ADD *.py Pipfile Pipfile.lock /
+ADD data /data
 
 RUN pipenv install --system
 RUN mkdir .lws
