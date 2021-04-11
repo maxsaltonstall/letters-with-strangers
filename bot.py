@@ -37,7 +37,8 @@ async def on_ready():
 # Currently up to 8 letters per player
 async def get(ctx):
     player = Player(ctx.author)
-    letter_rand = Letter.random_letter()
+    # TODO: this could probably use a refactor -- we're passing lots of stuff around
+    letter_rand = Letter.random_letter(restricted_letters=player.get_letters())
     await ctx.send(player.add_letter(letter_rand))
     all_letters.append(letter_rand)
 
