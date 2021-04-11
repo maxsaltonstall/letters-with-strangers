@@ -92,7 +92,7 @@ class Player:
             self.add_money(points)
             unique_letters = ''.join(set(word))
             for letter in unique_letters:
-                try: 
+                try:
                     self.remove_letter(letter)
                 except:
                     return f"unable to spell the word {word}; you don't have the letter '{letter}'"
@@ -100,8 +100,6 @@ class Player:
         else:
             logging.info(f"Word '{word}' not found in dictionary {dictionary}")
             return f"Sorry, the word '{word}' isn't in my vocabulary!"
-
-
 
     def save_state(self):
         pickled = jsonpickle.encode(self.state)
