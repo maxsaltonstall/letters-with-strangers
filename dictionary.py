@@ -3,7 +3,10 @@ import logging
 
 class Dictionary:
 
+    lexicon = "uninitialized"
+
     def __init__(self, lexicon):
+        self.lexicon = lexicon
         if lexicon == "simple":
             self.words_i_know = frozenset(['CAT', 'RAT', 'BAT', 'SAT', 'MAT', 'TALL', 'BALL', 'CALL', 'FALL', 'FAR', 'TAR',
                                            'BAR', 'CAR', 'CAB', 'TAB', 'LAB', 'GNAT', 'TAN', 'CAN', 'BAN', 'RAN', 'BASS',
@@ -32,3 +35,6 @@ class Dictionary:
 
     def check_word(self, word):
         return word in self.words_i_know
+
+    def __str__(self):
+        return self.lexicon
