@@ -60,23 +60,7 @@ async def word(ctx, *args):
     player = Player(ctx.author)
     word = args[0].upper()
     dictionary = Dictionary(lexicon)
-    if dictionary.check_word(word):  # is this a word I think is valid
-        points = len(word)
-        player.add_points(points)
-        player.add_money(points)
-        await ctx.send("{} formed the word ""{}"" and scored {} points".format(player, word, points))
-        for ltr in word:  # try to remvoe letters in word from player's inventory
-            ## TODO: need to check only unique letters, avoid duplicates
-            try:
-                player.remove_letter(ltr)
-            except:
-                msg = f"# Error 1 #: Couldn't remove '{ltr}' from {player}'s letters"
-                logging.error(msg)
-                await ctx.send(msg)
-    else:
-        msg = f"# Error 2 #: I don't know the word '{word}' yet, sorry"
-        await ctx.send(msg)
-        logging.info(msg)
+    await ctx.send(player.make_word(word, dictionary))
 
 
 @bot.command(brief='Show me my progress', description='Get my score')
