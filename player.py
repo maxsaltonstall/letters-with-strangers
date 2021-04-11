@@ -90,14 +90,12 @@ class Player:
             points = len(word)
             self.add_points(points)
             self.add_money(points)
-            errors = ""
-            for letter in word:   ## TODO: need to check only unique letters, avoid duplicates
+            unique_letters = ''.join(set(word))
+            for letter in unique_letters:
                 try: 
                     self.remove_letter(letter)
                 except:
-                    msg = f"# Error 1 #: Couldn't remove {letter} from {self.get_username()}'s hand"
-                    logging.error(msg)
-                    errors += msg
+                    return f"unable to spell the word {word}; you don't have the letter '{letter}'"
             return f"you formed the word '{word}' and scored {points} points"
         else:
             logging.info(f"Word '{word}' not found in dictionary {dictionary}")
