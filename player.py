@@ -2,14 +2,14 @@ import logging, jsonpickle, random
 from collections import defaultdict
 
 from dictionary import Dictionary
-
+from party import Party
 
 class Player:
 
     def __init__(self, user):
         
-        self.player_id = f"{user.name}#{user.discriminator}"
-        self.statefile = f".lws/{self.player_id}.json"
+        self.player_id = user.id
+        self.statefile = f".lws/player_{self.player_id}.json"
         
         try:
             with open(self.statefile, 'r') as statefile:
@@ -25,6 +25,28 @@ class Player:
             self.state["letter_xp"] = defaultdict(int)  # track progress per letter + wildcard
             self.save_state()
 
+    def form_party(self, members):
+        if "party" in self.state:
+            # I'm already in a party; add new members to it
+            party = Party(party_id = self.state["party"])
+            for member in members:
+                party.add_member(member)
+            return(f"added {members} to party")
+        else:
+            members.append(self.player_id)
+            party = Party()
+            for member in members:
+                party.add_member(member)
+            self.state["party"] = str(party)
+            self.save_state()
+            return(f"joined party with {party.get_members()}")
+    
+    def get_party_members(self):
+        if "party" in self.state:
+            return(f"You're in a party with {Party(self.state['party']).get_members()}")
+        else:
+            return("You're not currently in a party. Start one with: `..party @User1 @User2`")
+    
     def get_letters(self):
         return self.state["letters"]
 
