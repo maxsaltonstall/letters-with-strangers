@@ -18,6 +18,7 @@ class Party:
 
     def save_state(self):
         statefile = f".lws/party_{self.party_id}.json"
+        jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)
         pickled = jsonpickle.encode(self.state)
         with open(statefile, 'w') as statefile:
             statefile.write(pickled)

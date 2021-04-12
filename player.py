@@ -125,6 +125,7 @@ class Player:
             return f"Sorry, the word '{word}' isn't in my vocabulary!"
 
     def save_state(self):
+        jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)
         pickled = jsonpickle.encode(self.state)
         with open(self.statefile, 'w') as statefile:
             statefile.write(pickled)
