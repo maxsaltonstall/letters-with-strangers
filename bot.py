@@ -1,4 +1,4 @@
-import os, logging
+import os, glob, logging
 from player import Player
 from letter import Letter
 from dictionary import Dictionary
@@ -56,6 +56,19 @@ async def current(ctx):
     await ctx.send("{} your letters are {}".format(player, str(letter_list)))
 
 
+@bot.command(brief='Form a party or list party members', description='Form a party with one or more other players; usage: `party @Friend1 @Friend2` (if no players specified, get a list of current members)')
+async def party(ctx):
+    player = Player(ctx.author)
+    mentions = []  # TODO: replace this with a fancy list comprehension-type thing
+    for mention in ctx.message.mentions:
+        mentions.append(mention.id)
+    if len(mentions):
+        # create a party
+        await ctx.send(player.form_party(members=mentions))
+    else:
+        await ctx.send(player.get_party_members())
+
+
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
 async def word(ctx, *args):
     player = Player(ctx.author)
@@ -98,5 +111,15 @@ async def shuffle(ctx):
 async def purge(ctx):
     player = Player(ctx.author)
     await ctx.send(player.purge())
+
+
+@bot.command(brief='[debug] delete all state', description='FOR DEVELOPMENT ONLY! Delete all state files.')
+async def purge_all_state(ctx):
+    # TODO: make sure this can't run on prod
+    files = glob.glob('.lws/*')
+    for f in files:
+        os.remove(f)
+    await ctx.send("💥 💥 💥 purged ALL state 💥 💥 💥")
+
 
 bot.run(token)
