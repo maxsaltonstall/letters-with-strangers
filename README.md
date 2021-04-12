@@ -5,51 +5,5 @@
 
 Letters With Strangers is a collaborative word-forming game played online via small groups and a Discord bot. Progress over time, expand your vocabulary, and cooperative with friends new and old!
 
-## Installation Instructions
-First, clone the repo and `cd` into it.
-```sh
-git clone https://github.com/davidstanke/letters-with-strangers
-cd letters-with-strangers
-```
-
-Install pipenv (if you don't already have it installed)
-```sh
-pip3 install pipenv
-```
-
-This project uses [pipenv](https://pypi.org/project/pipenv/) to manage packages and provide virtualization.
-Initialize a pipenv virtual environment and install dependencies into it:
-```sh
-python -m pipenv shell
-pip install pipenv
-python -m pipenv install
-```
-
-Create a `.env` file and add this to the end of it:
-```env
-TOKEN=[insert token here]
-```
-
-Finally, start the bot with:
-```sh
-python bot.py
-```
-
-## Linting
-This repo has an Actions config that will apply the flake8 linter to all PRs.
-To run the linter locally (within your pipenv shell):
-```sh
-pipenv install --dev
-python -m flake8
-```
-
-## Monitoring with PM2
-PM2 is a monitoring/running/daemon tool. You can install PM2 with `npm i -g pm2`, assuming you have Node.JS installed. Look at `docs/PM2.md` for info.
-
-## Running locally in Docker
-```sh
-docker build -t lws .
-docker run -it --env-file=.env lws
-```
-
-
+#### Developing LWS
+Read the [developer docs](docs/README.md) for info on how to run a local server and deploy to cloud infrastructure.
