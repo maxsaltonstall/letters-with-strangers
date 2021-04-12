@@ -1,8 +1,9 @@
 import logging, jsonpickle, uuid
 
+
 class Party:
 
-    def __init__(self, party_id:str=''):
+    def __init__(self, party_id: str = ''):
         if party_id:
             self.party_id = party_id
             self.statefile = f".lws/party_{self.party_id}.json"

@@ -4,6 +4,7 @@ from collections import defaultdict
 from dictionary import Dictionary
 from party import Party
 
+
 class Player:
 
     def __init__(self, user):
@@ -28,7 +29,7 @@ class Player:
     def form_party(self, members):
         if "party" in self.state:
             # I'm already in a party; add new members to it
-            party = Party(party_id = self.state["party"])
+            party = Party(party_id=self.state["party"])
             for member in members:
                 party.add_member(member)
             return(f"added {members} to party")

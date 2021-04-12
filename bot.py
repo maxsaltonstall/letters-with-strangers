@@ -63,7 +63,7 @@ async def party(ctx):
     for mention in ctx.message.mentions:
         mentions.append(mention.id)
     if len(mentions):
-        # create a party 
+        # create a party
         await ctx.send(player.form_party(members=mentions))
     else:
         await ctx.send(player.get_party_members())
