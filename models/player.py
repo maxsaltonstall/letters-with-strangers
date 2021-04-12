@@ -1,4 +1,4 @@
-import logging, jsonpickle, random
+import logging, jsonpickle, random, os
 from collections import defaultdict
 
 from .dictionary import Dictionary
@@ -31,8 +31,8 @@ class Player:
             # I'm already in a party; add new members to it
             party = Party(party_id=self.state["party"])
             for member in members:
-                party.add_member(member)
-            return(f"added {members} to party")
+                party.add_member(member.id)
+            return(party)
         else:
             members.append(self.player_id)
             party = Party()
@@ -40,7 +40,7 @@ class Player:
                 party.add_member(member)
             self.state["party"] = str(party)
             self.save_state()
-            return(f"joined party with {party.get_members()}")
+            return(party)
     
     def get_party_members(self):
         if "party" in self.state:
@@ -130,6 +130,15 @@ class Player:
         with open(self.statefile, 'w') as statefile:
             statefile.write(pickled)
             statefile.close()
+
+    @staticmethod
+    def get_player_username_by_id(id:int):
+        statefile = f".lws/player_{id}.json"
+        if os.path.exists(statefile):
+            with open(statefile,'r') as statefile:
+                return jsonpickle.decode(statefile.read())
+        else:
+            logging.error(f"unable to read statefile for user ID: {id}")
 
     def __str__(self):
         return self.get_username()

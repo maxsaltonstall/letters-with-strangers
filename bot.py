@@ -61,10 +61,16 @@ async def party(ctx):
     player = Player(ctx.author)
     mentions = []  # TODO: replace this with a fancy list comprehension-type thing
     for mention in ctx.message.mentions:
-        mentions.append(mention.id)
+        mentions.append(mention)
     if len(mentions):
+        # ensure mentioned players are represented in state
+        for mentioned in mentions:
+            if not os.path.exists(f".lws/party_{mentioned.id}"):
+                new_player=Player(mentioned)
         # create a party
-        await ctx.send(player.form_party(members=mentions))
+        party = player.form_party(members=mentions)
+        party_members = [Player.get_player_username_by_id(id) for id in party.get_members()]
+        await ctx.send(f"Formed a party with {party_members}")
     else:
         await ctx.send(player.get_party_members())
 
