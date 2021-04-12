@@ -1,7 +1,7 @@
 import os, glob, logging
-from player import Player
-from letter import Letter
-from dictionary import Dictionary
+from models.player import Player
+from models.letter import Letter
+from models.dictionary import Dictionary
 
 from discord.ext import commands
 

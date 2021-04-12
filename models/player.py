@@ -1,8 +1,8 @@
 import logging, jsonpickle, random
 from collections import defaultdict
 
-from dictionary import Dictionary
-from party import Party
+from .dictionary import Dictionary
+from .party import Party
 
 
 class Player:
