@@ -68,9 +68,8 @@ async def party(ctx):
             if not os.path.exists(f".lws/party_{mentioned.id}"):
                 new_player=Player(mentioned)
         # create a party
-        party = player.form_party(members=mentions)
-        party_members = [Player.get_player_username_by_id(id) for id in party.get_members()]
-        await ctx.send(f"Formed a party with {party_members}")
+        party = player.form_party([mentioned.id for mentioned in mentions])
+        await ctx.send(f"Formed a party with {party.get_members()}")
     else:
         await ctx.send(player.get_party_members())
 
@@ -78,9 +77,10 @@ async def party(ctx):
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
 async def word(ctx, *args):
     player = Player(ctx.author)
-    word = args[0].upper()
-    dictionary = Dictionary(lexicon)
-    await ctx.send(player.make_word(word, dictionary))
+    # word = args[0].upper()
+    # dictionary = Dictionary(lexicon)
+    # await ctx.send(player.make_word(word, dictionary))
+    await ctx.send("YO")
 
 
 @bot.command(brief='Show me my progress', description='Get my score')

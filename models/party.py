@@ -24,8 +24,8 @@ class Party:
             statefile.write(pickled)
             statefile.close()
 
-    def add_member(self, member):
-        self.state["members"].append(member.id)
+    def add_member(self, member_id: int):
+        self.state["members"].append(member_id)
         self.save_state()
 
     def get_members(self):

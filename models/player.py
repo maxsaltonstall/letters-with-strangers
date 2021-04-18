@@ -31,7 +31,7 @@ class Player:
             # I'm already in a party; add new members to it
             party = Party(party_id=self.state["party"])
             for member in members:
-                party.add_member(member.id)
+                party.add_member(member)
             return(party)
         else:
             members.append(self.player_id)
