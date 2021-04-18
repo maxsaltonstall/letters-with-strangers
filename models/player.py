@@ -38,13 +38,13 @@ class Player:
             party = Party()
             for member in members:
                 party.add_member(member)
-            self.state["party"] = str(party)
+            self.state["party"] = party.get_id()
             self.save_state()
             return(party)
     
-    def get_party_members(self):
+    def get_party(self):
         if "party" in self.state:
-            return(f"You're in a party with {Party(self.state['party']).get_members()}")
+            return(f"{Party(self.state['party'])}")
         else:
             return("You're not currently in a party. Start one with: `..party @User1 @User2`")
     
@@ -130,15 +130,6 @@ class Player:
         with open(self.statefile, 'w') as statefile:
             statefile.write(pickled)
             statefile.close()
-
-    @staticmethod
-    def get_player_username_by_id(id:int):
-        statefile = f".lws/player_{id}.json"
-        if os.path.exists(statefile):
-            with open(statefile,'r') as statefile:
-                return jsonpickle.decode(statefile.read())
-        else:
-            logging.error(f"unable to read statefile for user ID: {id}")
 
     def __str__(self):
         return self.get_username()

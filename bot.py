@@ -69,9 +69,9 @@ async def party(ctx):
                 new_player=Player(mentioned)
         # create a party
         party = player.form_party([mentioned.id for mentioned in mentions])
-        await ctx.send(f"Formed a party with {party.get_members()}")
+        await ctx.send(str(party))
     else:
-        await ctx.send(player.get_party_members())
+        await ctx.send(str(player.get_party()))
 
 
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')

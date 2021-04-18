@@ -1,5 +1,8 @@
 import logging, jsonpickle, uuid
 
+from .util.player_util import PlayerUtil
+from .util.string_util import StringUtil
+
 
 class Party:
 
@@ -24,6 +27,9 @@ class Party:
             statefile.write(pickled)
             statefile.close()
 
+    def get_id(self) -> int:
+        return self.party_id
+
     def add_member(self, member_id: int):
         self.state["members"].append(member_id)
         self.save_state()
@@ -31,5 +37,9 @@ class Party:
     def get_members(self):
         return self.state["members"]
 
+    def get_members_as_string(self) -> str:
+        player_names = [PlayerUtil.get_player_username_by_id(player) for player in self.get_members()]
+        return StringUtil.readable_list(player_names)
+
     def __str__(self):
-        return str(self.party_id)
+        return f"Party {self.party_id}: **{self.get_members_as_string()}**"
