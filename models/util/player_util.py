@@ -2,7 +2,7 @@ import os, logging, jsonpickle
 
 class PlayerUtil:
     @staticmethod
-    def get_player_username_by_id(id:int):
+    def get_player_username_by_id(id:int) -> str:
         statefile = f".lws/player_{id}.json"
         if os.path.exists(statefile):
             with open(statefile,'r') as statefile:

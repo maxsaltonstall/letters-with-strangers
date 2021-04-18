@@ -57,21 +57,24 @@ async def current(ctx):
 
 
 @bot.command(brief='Form a party or list party members', description='Form a party with one or more other players; usage: `party @Friend1 @Friend2` (if no players specified, get a list of current members)')
-async def party(ctx):
+async def party(ctx, *args):
     player = Player(ctx.author)
-    mentions = []  # TODO: replace this with a fancy list comprehension-type thing
-    for mention in ctx.message.mentions:
-        mentions.append(mention)
-    if len(mentions):
-        # ensure mentioned players are represented in state
-        for mentioned in mentions:
-            if not os.path.exists(f".lws/party_{mentioned.id}"):
-                new_player=Player(mentioned)
-        # create a party
-        party = player.form_party([mentioned.id for mentioned in mentions])
-        await ctx.send(str(party))
+    mentions = []  # TODO: #101 replace this with a fancy list comprehension-type thing
+    if len(args) and args[0] == 'leave':
+        await ctx.send(player.leave_party())
     else:
-        await ctx.send(str(player.get_party()))
+        for mention in ctx.message.mentions:
+            mentions.append(mention)
+        if len(mentions):
+            # ensure mentioned players are represented in state
+            for mentioned in mentions:
+                if not os.path.exists(f".lws/party_{mentioned.id}"):
+                    new_player=Player(mentioned)
+            # create a party
+            party = player.form_party([mentioned.id for mentioned in mentions])
+            await ctx.send(str(party))
+        else:
+            await ctx.send(str(player.get_party()))
 
 
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')

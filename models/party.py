@@ -30,9 +30,18 @@ class Party:
     def get_id(self) -> int:
         return self.party_id
 
-    def add_member(self, member_id: int):
-        self.state["members"].append(member_id)
-        self.save_state()
+    def add_member(self, member_id: int) -> None:
+        if member_id not in self.get_members():
+            self.state["members"].append(member_id)
+            self.save_state()
+
+    def remove_member(self, member_id: int) -> str:
+        try:
+            self.state["members"].remove(member_id)
+            self.save_state()
+            return "You've left that party."
+        except ValueError as e:
+            return "Error: member not found in party"
 
     def get_members(self):
         return self.state["members"]
@@ -42,4 +51,4 @@ class Party:
         return StringUtil.readable_list(player_names)
 
     def __str__(self):
-        return f"Party {self.party_id}: **{self.get_members_as_string()}**"
+        return f"Party members: **{self.get_members_as_string()}**"

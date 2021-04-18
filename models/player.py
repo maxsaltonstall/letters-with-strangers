@@ -47,6 +47,12 @@ class Player:
             return(f"{Party(self.state['party'])}")
         else:
             return("You're not currently in a party. Start one with: `..party @User1 @User2`")
+
+    def leave_party(self):
+        message = Party(self.state["party"]).remove_member(self.player_id)
+        del self.state["party"]
+        self.save_state()
+        return message
     
     def get_letters(self):
         return self.state["letters"]
