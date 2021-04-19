@@ -1,5 +1,7 @@
 import logging, jsonpickle, uuid, itertools
 
+from .dictionary import Dictionary
+
 from .util.player_util import PlayerUtil
 from .util.string_util import StringUtil
 
@@ -43,7 +45,7 @@ class Party:
         except ValueError as e:
             return "Error: member not found in party"
 
-    def get_members(self):
+    def get_members(self) -> list:
         return self.state["members"]
 
     def get_members_as_string(self) -> str:
@@ -61,6 +63,26 @@ class Party:
         merged_letters.sort()
 
         return merged_letters
+
+    def make_word(self, word: str, dictionary: Dictionary) -> str:
+        if dictionary.check_word(word):
+            letters = list(word)
+            missing_letters = []
+            for letter in letters:
+                if letter not in self.get_letters():
+                    missing_letters.append(letter)
+            missing_letters = list(set(missing_letters))
+            missing_letters.sort()
+            if len(missing_letters):
+                return f"unable to spell the word {word}; you don't have the letter(s) {missing_letters}"
+            points = len(word)
+            for player in self.get_members():
+                PlayerUtil.remove_letters(player, letters)
+                PlayerUtil.add_points(player, points)
+            return f"you formed the word '{word}' and everyone scored {points} points"
+        else:
+            logging.info(f"Word '{word}' not found in dictionary {dictionary}")
+            return f"Sorry, the word '{word}' isn't in my vocabulary!"
 
     def __str__(self):
         return f"Party members: **{self.get_members_as_string()}**"

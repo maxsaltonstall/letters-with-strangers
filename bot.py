@@ -91,10 +91,15 @@ async def letters(ctx):
 
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
 async def word(ctx, *args):
-    player = Player(ctx.author)
     word = args[0].upper()
     dictionary = Dictionary(lexicon)
-    await ctx.send(player.make_word(word, dictionary))
+    player = Player(ctx.author)
+    party = player.get_party()
+    if party:
+        msg = party.make_word(word, dictionary)
+    else:
+        msg = player.make_word(word, dictionary)
+    await ctx.send(msg)
 
 
 @bot.command(brief='Show me my progress', description='Get my score')
