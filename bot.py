@@ -44,18 +44,18 @@ async def get(ctx):
     await ctx.send(player.add_letter(letter_rand))
     all_letters.append(letter_rand)
 
-
+# TODO(?): remove this, or alias it to `letters`
 @bot.command(brief='See what letters you have now', description='Find out current letters owned by player', aliases=['curr', 'cu'])
 async def current(ctx):
     player = Player(ctx.author)
     logging.debug("Fetching letters for {}".format(player))
     try:
         letter_list = player.get_letters()
-        logging.debug("got letters for {}: {}".format(player, str(letter_list)))
+        logging.debug(f"got letters for {player}: {str(letter_list)}")
     except Exception as e:
         logging.error(f"# Error 5 #: unable to fetch letters for {player.get_username()}")
         logging.exception(str(e))
-    await ctx.send("{} your letters are {}".format(player, str(letter_list)))
+    await ctx.send(f"{player}, your letters are {StringUtil.readable_list(letter_list, 'bold')}")
 
 
 @bot.command(brief='Form a party or list party members', description='Form a party with one or more other players; usage: `party @Friend1 @Friend2` (if no players specified, get a list of current members)')
@@ -67,26 +67,40 @@ async def party(ctx, *args):
     if len(mentions):
         # ensure mentioned players are represented in state
         for mentioned in mentions:
-            if not os.path.exists(f".lws/party_{mentioned.id}"):
-                new_player=Player(mentioned)
-        # create a party
-        party = player.form_party([mentioned.id for mentioned in mentions])
+            if Player(mentioned).has_party():
+                await ctx.send(f"Can't add @{mentioned.name} to your party -- they're already in a party.")
+            if not os.path.exists(f".lws/party_{mentioned.id}.json"):
+                Player(mentioned)
+        party = Party()
+        party.add_member(player.get_id())
+        player.set_party_id(party.get_id())
+        for member in mentions:
+            party.add_member(member.id)
+            Player(member).set_party_id(party.get_id())
         await ctx.send(str(party))
     else:
-        await ctx.send(str(player.get_party()) if player.get_party() else "You're not in a party! Start one with `..party @User @User2`" )
+        await ctx.send(str(Party(player.get_party_id())) if player.has_party() else "You're not in a party! Start one with `..party @User @User2`" )
 
 @bot.command(brief='Leave your party', description='Leave your current party, if you\'re in one')
 async def leave(ctx):
     player = Player(ctx.author)
-    await ctx.send(player.leave_party())
+    party = Party(player.get_party_id())
+    msg = party.remove_member(player.get_id())
+    player.unset_party_id()
+    await ctx.send(msg)
 
 @bot.command(brief='Get party\'s letters', description='Get all letters held by members of your party')
 async def letters(ctx):
     player = Player(ctx.author)
-    if(player.get_party()):
-        msg = f"Your party has the letters {StringUtil.readable_list(player.get_party().get_letters())}"
+    if(player.has_party()):
+        party = Party(player.get_party_id())
+        party_letters = party.get_letters()
+        if len(party_letters):
+            msg = f"Your party has the letters {StringUtil.readable_list(party.get_letters(), 'bold')}"
+        else:
+            msg = "Your party has no letters! To get some letters, the members can use `..get`"
     else:
-        msg = f"You have the letters {StringUtil.readable_list(player.get_letters())}"
+        msg = f"You have the letters {StringUtil.readable_list(player.get_letters(), 'bold')}"
     await ctx.send(msg)
 
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
@@ -94,13 +108,12 @@ async def word(ctx, *args):
     word = args[0].upper()
     dictionary = Dictionary(lexicon)
     player = Player(ctx.author)
-    party = player.get_party()
+    party_id = player.get_party_id()
     if party:
-        msg = party.make_word(word, dictionary)
+        msg = Party(party_id).make_word(word, dictionary)
     else:
         msg = player.make_word(word, dictionary)
     await ctx.send(msg)
-
 
 @bot.command(brief='Show me my progress', description='Get my score')
 async def score(ctx):

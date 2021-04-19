@@ -2,57 +2,69 @@ import logging, jsonpickle, random, os
 from collections import defaultdict
 
 from .dictionary import Dictionary
-from .party import Party
 
 
 class Player:
 
-    def __init__(self, user):
+    def __init__(self, user=None):
         
-        self.player_id = user.id
-        self.statefile = f".lws/player_{self.player_id}.json"
-        
-        try:
-            with open(self.statefile, 'r') as statefile:
-                self.state = jsonpickle.decode(statefile.read())
-        except FileNotFoundError:
-            logging.debug(f"statefile not found; initializing statefile for {self.player_id}")
+        if user:
+            self.player_id = user.id
+            self.statefile = f".lws/player_{self.player_id}.json"
+            
+            try:
+                with open(self.statefile, 'r') as statefile:
+                    self.state = jsonpickle.decode(statefile.read())
+            except FileNotFoundError:
+                logging.debug(f"statefile not found; initializing statefile for {self.player_id}")
+                self.state = {}
+                self.state["username"] = user.name
+                self.state["letters"] = []
+                self.state["score"] = 0  # experience
+                self.state["money"] = 0  # currency
+                self.state["handlimit"] = 8  # default for new players
+                self.state["letter_xp"] = defaultdict(int)  # track progress per letter + wildcard
+                self.save_state()
+        else:
+            # initialize an empty object
             self.state = {}
-            self.state["username"] = user.name
             self.state["letters"] = []
             self.state["score"] = 0  # experience
             self.state["money"] = 0  # currency
             self.state["handlimit"] = 8  # default for new players
             self.state["letter_xp"] = defaultdict(int)  # track progress per letter + wildcard
-            self.save_state()
 
-    def form_party(self, members):
+    def get_id(self) -> int:
+        return self.player_id
+
+    def load_user(self, user_id:int):
+        self.statefile = f".lws/player_{user_id}.json"
+        try:
+            with open(self.statefile, 'r') as statefile:
+                self.state = jsonpickle.decode(statefile.read())
+        except FileNotFoundError:
+            logging.exception(f"statefile not found")
+        self.player_id = user_id
+
+    def set_party_id(self, party_id:int) -> None:
+        self.state["party"] = party_id
+        self.save_state()
+
+    def get_party_id(self) -> int:
         if "party" in self.state:
-            # I'm already in a party; add new members to it
-            party = Party(party_id=self.state["party"])
-            for member in members:
-                party.add_member(member)
-            return(party)
-        else:
-            members.append(self.player_id)
-            party = Party()
-            for member in members:
-                party.add_member(member)
-            self.state["party"] = party.get_id()
-            self.save_state()
-            return(party)
-    
-    def get_party(self):
-        if "party" in self.state:
-            return(Party(self.state['party']))
+            return(self.state['party'])
         else:
             return(None)
 
-    def leave_party(self):
-        message = Party(self.state["party"]).remove_member(self.player_id)
+    def unset_party_id(self) -> None:
         del self.state["party"]
         self.save_state()
-        return message
+
+    def has_party(self) -> bool:
+        if self.get_party_id():
+            return True
+        else:
+            return False
     
     def get_letters(self):
         return self.state["letters"]
@@ -114,21 +126,21 @@ class Player:
     def get_money(self):
         return self.state["money"]
 
-    def make_word(self, word: str, dictionary: Dictionary):
-        if dictionary.check_word(word):
-            points = len(word)
-            self.add_points(points)
-            self.add_money(points)
-            unique_letters = ''.join(set(word))
-            for letter in unique_letters:
-                try:
-                    self.remove_letter(letter)
-                except:
-                    return f"unable to spell the word {word}; you don't have the letter '{letter}'"
-            return f"you formed the word '{word}' and scored {points} points"
-        else:
-            logging.info(f"Word '{word}' not found in dictionary {dictionary}")
-            return f"Sorry, the word '{word}' isn't in my vocabulary!"
+    # def make_word(self, word: str, dictionary: Dictionary):
+    #     if dictionary.check_word(word):
+    #         points = len(word)
+    #         self.add_points(points)
+    #         self.add_money(points)
+    #         unique_letters = ''.join(set(word))
+    #         for letter in unique_letters:
+    #             try:
+    #                 self.remove_letter(letter)
+    #             except:
+    #                 return f"unable to spell the word {word}; you don't have the letter '{letter}'"
+    #         return f"you formed the word '{word}' and scored {points} points"
+    #     else:
+    #         logging.info(f"Word '{word}' not found in dictionary {dictionary}")
+    #         return f"Sorry, the word '{word}' isn't in my vocabulary!"
 
     def save_state(self):
         jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)

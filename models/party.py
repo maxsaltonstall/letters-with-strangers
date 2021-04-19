@@ -1,6 +1,7 @@
-import logging, jsonpickle, uuid, itertools
+import logging, jsonpickle, uuid, os
 
 from .dictionary import Dictionary
+from .player import Player
 
 from .util.player_util import PlayerUtil
 from .util.string_util import StringUtil
@@ -41,16 +42,25 @@ class Party:
         try:
             self.state["members"].remove(member_id)
             self.save_state()
+            if len(self.get_members()) <= 1:
+                self.disband_party()
             return "You've left that party."
         except ValueError as e:
             return "Error: member not found in party"
+
+    def disband_party(self) -> None:
+        for player_id in self.get_members():
+            player = Player()
+            player.load_user(player_id)
+            player.unset_party_id()
+        os.remove(self.statefile)
 
     def get_members(self) -> list:
         return self.state["members"]
 
     def get_members_as_string(self) -> str:
         player_names = [PlayerUtil.get_player_username_by_id(player) for player in self.get_members()]
-        return StringUtil.readable_list(player_names)
+        return StringUtil.readable_list(player_names, 'bold')
 
     def get_letters(self) -> list:
         # TODO: this can probably be made more efficient. Something like a set() may help?
@@ -85,4 +95,4 @@ class Party:
             return f"Sorry, the word '{word}' isn't in my vocabulary!"
 
     def __str__(self):
-        return f"Party members: **{self.get_members_as_string()}**"
+        return f"Party members: {self.get_members_as_string()}"
