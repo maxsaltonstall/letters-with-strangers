@@ -1,8 +1,9 @@
 from typing import List, Any
 
+
 class StringUtil:
     @staticmethod
-    def readable_list(seq: List[Any], format: str='') -> str:
+    def readable_list(seq: List[Any], format: str = '') -> str:
         """Return a grammatically correct human readable string (with an Oxford comma)."""
         # Ref: https://stackoverflow.com/a/53981846/
         seq = [str(s) for s in seq]

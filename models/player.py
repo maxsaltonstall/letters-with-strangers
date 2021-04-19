@@ -1,7 +1,6 @@
-import logging, jsonpickle, random, os
+import logging, jsonpickle, random
 from collections import defaultdict
 
-from .dictionary import Dictionary
 from .util.string_util import StringUtil
 
 
@@ -38,16 +37,16 @@ class Player:
     def get_id(self) -> int:
         return self.player_id
 
-    def load_user(self, user_id:int):
+    def load_user(self, user_id: int):
         self.statefile = f".lws/player_{user_id}.json"
         try:
             with open(self.statefile, 'r') as statefile:
                 self.state = jsonpickle.decode(statefile.read())
         except FileNotFoundError:
-            logging.exception(f"statefile not found")
+            logging.exception("statefile not found")
         self.player_id = user_id
 
-    def set_party_id(self, party_id:int) -> None:
+    def set_party_id(self, party_id: int) -> None:
         self.state["party"] = party_id
         self.save_state()
 

@@ -44,6 +44,7 @@ async def get(ctx):
     await ctx.send(player.add_letter(letter_rand))
     all_letters.append(letter_rand)
 
+
 # TODO(?): remove this, or alias it to `letters`
 @bot.command(brief='See what letters you have now', description='Find out current letters owned by player', aliases=['curr', 'cu'])
 async def current(ctx):
@@ -82,7 +83,7 @@ async def party(ctx, *args):
                 partying_player.load_user(user_id)
                 partying_usernames.append(partying_player.get_username())
             await ctx.send(f"Unable to create party; the following player(s) are already in parties: {StringUtil.readable_list(partying_usernames)}")
-        else:    
+        else:
             if player.get_party_id():
                 party = Party(player.get_party_id())
             else:
@@ -94,7 +95,8 @@ async def party(ctx, *args):
                 Player(member).set_party_id(party.get_id())  # TODO: move into Party
             await ctx.send(str(party))
     else:
-        await ctx.send(str(Party(player.get_party_id())) if player.get_party_id() else "You're not in a party! Start one with `..party @User @User2`" )
+        await ctx.send(str(Party(player.get_party_id())) if player.get_party_id() else "You're not in a party! Start one with `..party @User @User2`")
+
 
 @bot.command(brief='Leave your party', description='Leave your current party, if you\'re in one')
 async def leave(ctx):
@@ -103,6 +105,7 @@ async def leave(ctx):
     msg = party.remove_member(player.get_id())
     player.unset_party_id()
     await ctx.send(msg)
+
 
 @bot.command(brief='Get party\'s letters', description='Get all letters held by members of your party')
 async def letters(ctx):
@@ -122,6 +125,7 @@ async def letters(ctx):
             msg = "You have no letters. Get some with `..get`!"
     await ctx.send(msg)
 
+
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
 async def word(ctx, *args):
     if len(args):
@@ -134,6 +138,7 @@ async def word(ctx, *args):
             party.add_member(player.get_id())
             party_id = party.get_id()
         await ctx.send(Party(party_id).make_word(word, dictionary))
+
 
 @bot.command(brief='Show me my progress', description='Get my score')
 async def score(ctx):

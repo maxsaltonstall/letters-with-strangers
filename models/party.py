@@ -43,7 +43,7 @@ class Party:
             self.save_state()
             return f"added {new_member.get_username()} to your party"
         elif new_member_prior_party_id != self.get_id():
-            return f"Can't add {new_member.get_username()} to your party -- they're already in another party!"            
+            return f"Can't add {new_member.get_username()} to your party -- they're already in another party!"
 
     def remove_member(self, member_id: int) -> str:
         try:
@@ -52,7 +52,7 @@ class Party:
             if len(self.get_members()) <= 1:
                 self.disband_party()
             return "You've left that party."
-        except ValueError as e:
+        except ValueError:
             return "Error: member not found in party"
 
     def disband_party(self) -> None:
