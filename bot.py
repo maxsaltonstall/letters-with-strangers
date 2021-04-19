@@ -1,7 +1,9 @@
 import os, glob, logging
-from player import Player
-from letter import Letter
-from dictionary import Dictionary
+from models.player import Player
+from models.letter import Letter
+from models.party import Party
+from models.dictionary import Dictionary
+from models.util.string_util import StringUtil
 
 from discord.ext import commands
 
@@ -43,38 +45,99 @@ async def get(ctx):
     all_letters.append(letter_rand)
 
 
+# TODO(?): remove this, or alias it to `letters`
 @bot.command(brief='See what letters you have now', description='Find out current letters owned by player', aliases=['curr', 'cu'])
 async def current(ctx):
     player = Player(ctx.author)
     logging.debug("Fetching letters for {}".format(player))
     try:
         letter_list = player.get_letters()
-        logging.debug("got letters for {}: {}".format(player, str(letter_list)))
+        logging.debug(f"got letters for {player}: {str(letter_list)}")
     except Exception as e:
         logging.error(f"# Error 5 #: unable to fetch letters for {player.get_username()}")
         logging.exception(str(e))
-    await ctx.send("{} your letters are {}".format(player, str(letter_list)))
+    await ctx.send(f"{player}, your letters are {StringUtil.readable_list(letter_list, 'bold')}")
 
 
 @bot.command(brief='Form a party or list party members', description='Form a party with one or more other players; usage: `party @Friend1 @Friend2` (if no players specified, get a list of current members)')
-async def party(ctx):
+async def party(ctx, *args):
     player = Player(ctx.author)
-    mentions = []  # TODO: replace this with a fancy list comprehension-type thing
-    for mention in ctx.message.mentions:
-        mentions.append(mention.id)
+    mentions = [mention for mention in ctx.message.mentions]
     if len(mentions):
-        # create a party
-        await ctx.send(player.form_party(members=mentions))
+
+        already_partying_players = []  # players who are already in other parties
+        # ensure mentioned players are represented in state and may be added
+        for mentioned in mentions:
+            if os.path.exists(f".lws/party_{mentioned.id}.json"):
+                mentioned_player = Player()
+                mentioned_player.load_user(mentioned.id)
+            else:
+                mentioned_player = Player(mentioned)
+            if mentioned_player.get_party_id():
+                already_partying_players.append(mentioned_player.get_id())
+            
+        if len(already_partying_players):
+            partying_usernames = []
+            for user_id in already_partying_players:
+                partying_player = Player()
+                partying_player.load_user(user_id)
+                partying_usernames.append(partying_player.get_username())
+            await ctx.send(f"Unable to create party; the following player(s) are already in parties: {StringUtil.readable_list(partying_usernames)}")
+        else:
+            if player.get_party_id():
+                party = Party(player.get_party_id())
+            else:
+                party = Party()
+                party.add_member(player.get_id())
+                player.set_party_id(party.get_id())  # TODO: move into Party
+            for member in mentions:
+                party.add_member(member.id)
+                Player(member).set_party_id(party.get_id())  # TODO: move into Party
+            await ctx.send(str(party))
     else:
-        await ctx.send(player.get_party_members())
+        await ctx.send(str(Party(player.get_party_id())) if player.get_party_id() else "You're not in a party! Start one with `..party @User @User2`")
+
+
+@bot.command(brief='Leave your party', description='Leave your current party, if you\'re in one')
+async def leave(ctx):
+    player = Player(ctx.author)
+    party = Party(player.get_party_id())
+    msg = party.remove_member(player.get_id())
+    player.unset_party_id()
+    await ctx.send(msg)
+
+
+@bot.command(brief='Get party\'s letters', description='Get all letters held by members of your party')
+async def letters(ctx):
+    player = Player(ctx.author)
+    if(player.get_party_id()):
+        party = Party(player.get_party_id())
+        party_letters = party.get_letters()
+        if len(party_letters):
+            msg = f"Your party has the letters {StringUtil.readable_list(party.get_letters(), 'bold')}"
+        else:
+            msg = "Your party has no letters! To get some letters, the members can use `..get`"
+    else:
+        letters = player.get_letters()
+        if len(letters):
+            msg = f"You have the letters {StringUtil.readable_list(player.get_letters(), 'bold')}"
+        else:
+            msg = "You have no letters. Get some with `..get`!"
+    await ctx.send(msg)
 
 
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
 async def word(ctx, *args):
-    player = Player(ctx.author)
-    word = args[0].upper()
-    dictionary = Dictionary(lexicon)
-    await ctx.send(player.make_word(word, dictionary))
+    if len(args):
+        word = args[0].upper()
+        dictionary = Dictionary(lexicon)
+        player = Player(ctx.author)
+        party_id = player.get_party_id()
+        if not party_id:
+            party = Party()
+            party.add_member(player.get_id())
+            party_id = party.get_id()
+        await ctx.send(Party(party_id).make_word(word, dictionary))
 
 
 @bot.command(brief='Show me my progress', description='Get my score')
@@ -97,8 +160,13 @@ async def hello(ctx):
 
 @bot.command(brief='Kick-start your LWS play', description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
 async def cheat(ctx):
-    player = Player(ctx.author)
-    await ctx.send(player.cheat())
+    if len(ctx.message.mentions):
+        players = [Player(mentioned) for mentioned in ctx.message.mentions]
+    else:
+        players = [Player(ctx.author)]
+    for player in players:
+        player.cheat()
+    await ctx.send("Okay cheaty! You cheated.")
 
 
 @bot.command(breif="Shuffles your hand", description="Shuffles your hand!")
