@@ -2,6 +2,7 @@ import logging, jsonpickle, random, os
 from collections import defaultdict
 
 from .dictionary import Dictionary
+from .util.string_util import StringUtil
 
 
 class Player:
@@ -52,19 +53,14 @@ class Player:
 
     def get_party_id(self) -> int:
         if "party" in self.state:
-            return(self.state['party'])
+            return self.state['party']
         else:
-            return(None)
+            return None
 
     def unset_party_id(self) -> None:
-        del self.state["party"]
-        self.save_state()
-
-    def has_party(self) -> bool:
-        if self.get_party_id():
-            return True
-        else:
-            return False
+        if "party" in self.state:
+            del self.state["party"]
+            self.save_state()
     
     def get_letters(self):
         return self.state["letters"]
@@ -94,8 +90,9 @@ class Player:
         return("Poof! All your letters are gone.")
 
     def remove_letter(self, letter):
-        self.state["letters"].remove(letter.upper())
-        self.save_state()
+        if letter.upper() in self.state["letters"]:
+            self.state["letters"].remove(letter.upper())
+            self.save_state()
 
     def remove_letters(self, letters):
         for letter in letters:
@@ -104,7 +101,7 @@ class Player:
     def shuffle_letters(self):
         random.shuffle(self.state["letters"])
         self.save_state()
-        return(f"Shuffled your letters! They are now {self.state['letters']}")
+        return(f"Shuffled your letters! They are now {StringUtil.readable_list(self.state['letters'], 'bold')}")
 
     def num_letters(self):
         return len(self.state["letters"])
@@ -125,22 +122,6 @@ class Player:
                
     def get_money(self):
         return self.state["money"]
-
-    # def make_word(self, word: str, dictionary: Dictionary):
-    #     if dictionary.check_word(word):
-    #         points = len(word)
-    #         self.add_points(points)
-    #         self.add_money(points)
-    #         unique_letters = ''.join(set(word))
-    #         for letter in unique_letters:
-    #             try:
-    #                 self.remove_letter(letter)
-    #             except:
-    #                 return f"unable to spell the word {word}; you don't have the letter '{letter}'"
-    #         return f"you formed the word '{word}' and scored {points} points"
-    #     else:
-    #         logging.info(f"Word '{word}' not found in dictionary {dictionary}")
-    #         return f"Sorry, the word '{word}' isn't in my vocabulary!"
 
     def save_state(self):
         jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)

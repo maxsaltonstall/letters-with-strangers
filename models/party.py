@@ -3,7 +3,6 @@ import logging, jsonpickle, uuid, os
 from .dictionary import Dictionary
 from .player import Player
 
-from .util.player_util import PlayerUtil
 from .util.string_util import StringUtil
 
 
@@ -33,10 +32,18 @@ class Party:
     def get_id(self) -> int:
         return self.party_id
 
-    def add_member(self, member_id: int) -> None:
-        if member_id not in self.get_members():
+    def add_member(self, member_id: int) -> str:
+        new_member = Player()
+        new_member.load_user(member_id)
+        new_member_prior_party_id = new_member.get_party_id()
+        if new_member_prior_party_id == self.get_id():
+            return f"{new_member.get_username()} is already in your party"
+        elif not new_member_prior_party_id:
             self.state["members"].append(member_id)
             self.save_state()
+            return f"added {new_member.get_username()} to your party"
+        elif new_member_prior_party_id != self.get_id():
+            return f"Can't add {new_member.get_username()} to your party -- they're already in another party!"            
 
     def remove_member(self, member_id: int) -> str:
         try:
@@ -59,20 +66,25 @@ class Party:
         return self.state["members"]
 
     def get_members_as_string(self) -> str:
-        player_names = [PlayerUtil.get_player_username_by_id(player) for player in self.get_members()]
+        player_names = []
+        for player_id in self.get_members():
+            player = Player()
+            player.load_user(player_id)
+            player_names.append(player.get_username())
         return StringUtil.readable_list(player_names, 'bold')
 
     def get_letters(self) -> list:
-        # TODO: this can probably be made more efficient. Something like a set() may help?
-        letters_list_of_lists = [PlayerUtil.get_player_letters(player_id) for player_id in self.get_members()]
-        merged_letters = []
-        for sublist in letters_list_of_lists:
-            for letter in sublist:
-                if letter not in merged_letters:
-                    merged_letters.append(letter)
-        merged_letters.sort()
+        party_letters = set()
+        for player_id in self.get_members():
+            player = Player()
+            player.load_user(player_id)
+            for letter in player.get_letters():
+                party_letters.add(letter)
 
-        return merged_letters
+        list_party_letters = list(party_letters)
+        list_party_letters.sort()
+
+        return list_party_letters
 
     def make_word(self, word: str, dictionary: Dictionary) -> str:
         if dictionary.check_word(word):
@@ -84,12 +96,14 @@ class Party:
             missing_letters = list(set(missing_letters))
             missing_letters.sort()
             if len(missing_letters):
-                return f"unable to spell the word {word}; you don't have the letter(s) {missing_letters}"
+                return f"unable to spell the word {word}; you don't have the letter(s) {StringUtil.readable_list(missing_letters, 'bold')}"
             points = len(word)
-            for player in self.get_members():
-                PlayerUtil.remove_letters(player, letters)
-                PlayerUtil.add_points(player, points)
-            return f"you formed the word '{word}' and everyone scored {points} points"
+            for player_id in self.get_members():
+                player = Player()
+                player.load_user(player_id)
+                player.remove_letters(letters)
+                player.add_points(points)
+            return f"you formed the word '{word}' and {' everyone' if len(self.get_members()) > 1 else ''} scored {points} points"
         else:
             logging.info(f"Word '{word}' not found in dictionary {dictionary}")
             return f"Sorry, the word '{word}' isn't in my vocabulary!"
