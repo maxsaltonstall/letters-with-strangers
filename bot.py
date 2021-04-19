@@ -1,7 +1,9 @@
 import os, glob, logging
 from models.player import Player
 from models.letter import Letter
+from models.party import Party
 from models.dictionary import Dictionary
+from models.util.string_util import StringUtil
 
 from discord.ext import commands
 
@@ -60,30 +62,39 @@ async def current(ctx):
 async def party(ctx, *args):
     player = Player(ctx.author)
     mentions = []  # TODO: #101 replace this with a fancy list comprehension-type thing
-    if len(args) and args[0] == 'leave':
-        await ctx.send(player.leave_party())
+    for mention in ctx.message.mentions:
+        mentions.append(mention)
+    if len(mentions):
+        # ensure mentioned players are represented in state
+        for mentioned in mentions:
+            if not os.path.exists(f".lws/party_{mentioned.id}"):
+                new_player=Player(mentioned)
+        # create a party
+        party = player.form_party([mentioned.id for mentioned in mentions])
+        await ctx.send(str(party))
     else:
-        for mention in ctx.message.mentions:
-            mentions.append(mention)
-        if len(mentions):
-            # ensure mentioned players are represented in state
-            for mentioned in mentions:
-                if not os.path.exists(f".lws/party_{mentioned.id}"):
-                    new_player=Player(mentioned)
-            # create a party
-            party = player.form_party([mentioned.id for mentioned in mentions])
-            await ctx.send(str(party))
-        else:
-            await ctx.send(str(player.get_party()))
+        await ctx.send(str(player.get_party()) if player.get_party() else "You're not in a party! Start one with `..party @User @User2`" )
 
+@bot.command(brief='Leave your party', description='Leave your current party, if you\'re in one')
+async def leave(ctx):
+    player = Player(ctx.author)
+    await ctx.send(player.leave_party())
+
+@bot.command(brief='Get party\'s letters', description='Get all letters held by members of your party')
+async def letters(ctx):
+    player = Player(ctx.author)
+    if(player.get_party()):
+        msg = f"Your party has the letters {StringUtil.readable_list(player.get_party().get_letters())}"
+    else:
+        msg = f"You have the letters {StringUtil.readable_list(player.get_letters())}"
+    await ctx.send(msg)
 
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
 async def word(ctx, *args):
     player = Player(ctx.author)
-    # word = args[0].upper()
-    # dictionary = Dictionary(lexicon)
-    # await ctx.send(player.make_word(word, dictionary))
-    await ctx.send("YO")
+    word = args[0].upper()
+    dictionary = Dictionary(lexicon)
+    await ctx.send(player.make_word(word, dictionary))
 
 
 @bot.command(brief='Show me my progress', description='Get my score')
@@ -106,8 +117,13 @@ async def hello(ctx):
 
 @bot.command(brief='Kick-start your LWS play', description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
 async def cheat(ctx):
-    player = Player(ctx.author)
-    await ctx.send(player.cheat())
+    if len(ctx.message.mentions):
+        players = [Player(mentioned) for mentioned in ctx.message.mentions]
+    else:
+        players = [Player(ctx.author)]
+    for player in players:
+        player.cheat()
+    await ctx.send("Okay cheaty! You cheated.")
 
 
 @bot.command(breif="Shuffles your hand", description="Shuffles your hand!")

@@ -1,4 +1,4 @@
-import logging, jsonpickle, uuid
+import logging, jsonpickle, uuid, itertools
 
 from .util.player_util import PlayerUtil
 from .util.string_util import StringUtil
@@ -49,6 +49,18 @@ class Party:
     def get_members_as_string(self) -> str:
         player_names = [PlayerUtil.get_player_username_by_id(player) for player in self.get_members()]
         return StringUtil.readable_list(player_names)
+
+    def get_letters(self) -> list:
+        # TODO: this can probably be made more efficient. Something like a set() may help?
+        letters_list_of_lists = [PlayerUtil.get_player_letters(player_id) for player_id in self.get_members()]
+        merged_letters = []
+        for sublist in letters_list_of_lists:
+            for letter in sublist:
+                if letter not in merged_letters:
+                    merged_letters.append(letter)
+        merged_letters.sort()
+
+        return merged_letters
 
     def __str__(self):
         return f"Party members: **{self.get_members_as_string()}**"
