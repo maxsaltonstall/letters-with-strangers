@@ -1,6 +1,5 @@
 import os, glob, logging
 from models.player import Player
-from models.letter import Letter
 from models.party import Party
 from models.dictionary import Dictionary
 from models.util.string_util import StringUtil

@@ -7,7 +7,7 @@ from .util.string_util import StringUtil
 
 class Player:
 
-    def __init__(self, user = None):
+    def __init__(self, user=None):
         
         if user:
             self.player_id = user.id
@@ -30,16 +30,16 @@ class Player:
         return self.player_id
 
     @staticmethod
-    def statefile(player_id:int) -> str:
+    def statefile(player_id: int) -> str:
         return f".lws/player_{player_id}.json"
 
     @staticmethod
-    def read_state(player_id:int) -> dict:
+    def read_state(player_id: int) -> dict:
         with open(Player.statefile(player_id), 'r') as statefile:
             return jsonpickle.decode(statefile.read())
 
     @classmethod
-    def load(cls, player_id:int) -> object:
+    def load(cls, player_id: int) -> object:
         player = cls()
         player.player_id = player_id
         player.state = Player.read_state(player.player_id)
@@ -88,12 +88,12 @@ class Player:
         self.save_state()
         return("Poof! All your letters are gone.")
 
-    def remove_letter(self, letter:str):
+    def remove_letter(self, letter: str):
         if letter.upper() in self.state["letters"]:
             self.state["letters"].remove(letter.upper())
             self.save_state()
 
-    def remove_letters(self, letters:list):
+    def remove_letters(self, letters: list):
         for letter in letters:
             if letter in self.state["letters"]:
                 self.state["letters"].remove(letter)
