@@ -93,25 +93,26 @@ class Party:
         return list_party_letters
 
     def make_word(self, word: str, dictionary: Dictionary) -> str:
-        if dictionary.check_word(word):
-            letters = list(word)
-            missing_letters = []
-            for letter in letters:
-                if letter not in self.get_letters():
-                    missing_letters.append(letter)
-            missing_letters = list(set(missing_letters))
-            missing_letters.sort()
-            if len(missing_letters):
-                return f"unable to spell the word {word}; you don't have the letter(s) {StringUtil.readable_list(missing_letters, 'bold')}"
-            points = len(word)
-            for player_id in self.get_members():
-                player = Player.load(player_id)
-                player.remove_letters(letters)
-                player.add_points(points)
-            return f"you formed the word '{word}' and {' everyone' if len(self.get_members()) > 1 else ''} scored {points} points"
-        else:
+        
+        if not dictionary.check_word(word):
             logging.info(f"Word '{word}' not found in dictionary {dictionary}")
             return f"Sorry, the word '{word}' isn't in my vocabulary!"
+        
+        letters = list(word)
+        missing_letters = []
+        for letter in letters:
+            if letter not in self.get_letters():
+                missing_letters.append(letter)
+        missing_letters = list(set(missing_letters))
+        missing_letters.sort()
+        if len(missing_letters):
+            return f"unable to spell the word {word}; you don't have the letter(s) {StringUtil.readable_list(missing_letters, 'bold')}"
+        points = len(word)
+        for player_id in self.get_members():
+            player = Player.load(player_id)
+            player.remove_letters(letters)
+            player.add_points(points)
+        return f"you formed the word '{word}' and {' everyone' if len(self.get_members()) > 1 else ''} scored {points} points"
 
     def __str__(self):
         return f"Party members: {self.get_members_as_string()}"
