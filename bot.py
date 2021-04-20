@@ -69,8 +69,7 @@ async def party(ctx, *args):
         # ensure mentioned players are represented in state and may be added
         for mentioned in mentions:
             if os.path.exists(f".lws/party_{mentioned.id}.json"):
-                mentioned_player = Player()
-                mentioned_player.load_user(mentioned.id)
+                mentioned_player = Player.load(mentioned.id)
             else:
                 mentioned_player = Player(mentioned)
             if mentioned_player.get_party_id():
@@ -79,8 +78,7 @@ async def party(ctx, *args):
         if len(already_partying_players):
             partying_usernames = []
             for user_id in already_partying_players:
-                partying_player = Player()
-                partying_player.load_user(user_id)
+                partying_player = Player.load(user_id)
                 partying_usernames.append(partying_player.get_username())
             await ctx.send(f"Unable to create party; the following player(s) are already in parties: {StringUtil.readable_list(partying_usernames)}")
         else:

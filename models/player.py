@@ -37,14 +37,22 @@ class Player:
     def get_id(self) -> int:
         return self.player_id
 
-    def load_user(self, user_id: int):
-        self.statefile = f".lws/player_{user_id}.json"
+    @staticmethod
+    def statefile(player_id:int) -> str:
+        return f".lws/player_{player_id}.json"
+
+    @classmethod
+    def load(cls, player_id:int):
+
         try:
-            with open(self.statefile, 'r') as statefile:
-                self.state = jsonpickle.decode(statefile.read())
-        except FileNotFoundError:
-            logging.exception("statefile not found")
-        self.player_id = user_id
+            with open(Player.statefile(player_id), 'r') as statefile:
+                player = cls()
+                player.player_id = player_id
+                player.state = jsonpickle.decode(statefile.read())
+            return player
+        except:
+            logging.exception(f"unable to load player {player_id}")
+
 
     def set_party_id(self, party_id: int) -> None:
         self.state["party"] = party_id
@@ -125,7 +133,7 @@ class Player:
     def save_state(self):
         jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)
         pickled = jsonpickle.encode(self.state)
-        with open(self.statefile, 'w') as statefile:
+        with open(Player.statefile(self.player_id), 'w') as statefile:
             statefile.write(pickled)
             statefile.close()
 

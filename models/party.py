@@ -33,8 +33,7 @@ class Party:
         return self.party_id
 
     def add_member(self, member_id: int) -> str:
-        new_member = Player()
-        new_member.load_user(member_id)
+        new_member = Player.load(member_id)
         new_member_prior_party_id = new_member.get_party_id()
         if new_member_prior_party_id == self.get_id():
             return f"{new_member.get_username()} is already in your party"
@@ -57,8 +56,7 @@ class Party:
 
     def disband_party(self) -> None:
         for player_id in self.get_members():
-            player = Player()
-            player.load_user(player_id)
+            player = Player.load(player_id)
             player.unset_party_id()
         os.remove(self.statefile)
 
@@ -68,16 +66,14 @@ class Party:
     def get_members_as_string(self) -> str:
         player_names = []
         for player_id in self.get_members():
-            player = Player()
-            player.load_user(player_id)
+            player = Player.load(player_id)
             player_names.append(player.get_username())
         return StringUtil.readable_list(player_names, 'bold')
 
     def get_letters(self) -> list:
         party_letters = set()
         for player_id in self.get_members():
-            player = Player()
-            player.load_user(player_id)
+            player = Player.load(player_id)
             for letter in player.get_letters():
                 party_letters.add(letter)
 
@@ -99,8 +95,7 @@ class Party:
                 return f"unable to spell the word {word}; you don't have the letter(s) {StringUtil.readable_list(missing_letters, 'bold')}"
             points = len(word)
             for player_id in self.get_members():
-                player = Player()
-                player.load_user(player_id)
+                player = Player.load(player_id)
                 player.remove_letters(letters)
                 player.add_points(points)
             return f"you formed the word '{word}' and {' everyone' if len(self.get_members()) > 1 else ''} scored {points} points"
