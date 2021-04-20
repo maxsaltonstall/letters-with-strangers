@@ -11,38 +11,48 @@ class Party:
     def __init__(self, party_id: str = ''):
         if party_id:
             self.party_id = party_id
-            self.statefile = f".lws/party_{self.party_id}.json"
-            with open(self.statefile, 'r') as statefile:
+            with open(Party.statefile(party_id), 'r') as statefile:
                 self.state = jsonpickle.decode(statefile.read())
         else:
             self.state = {}
-            self.state["members"] = []  # list of member IDs
+            self.state["members"] = set()  # list of member IDs
             self.party_id = uuid.uuid4().hex
             self.save_state()
             logging.info(f"initialized party {self.party_id}: {str(self.state['members'])}")
 
+    @staticmethod
+    def statefile(party_id: int):
+        return f".lws/party_{party_id}.json"
+
     def save_state(self):
-        statefile = f".lws/party_{self.party_id}.json"
         jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)
         pickled = jsonpickle.encode(self.state)
-        with open(statefile, 'w') as statefile:
+        with open(Party.statefile(self.party_id), 'w') as statefile:
             statefile.write(pickled)
             statefile.close()
 
     def get_id(self) -> int:
         return self.party_id
 
-    def add_member(self, member_id: int) -> str:
-        new_member = Player.load(member_id)
-        new_member_prior_party_id = new_member.get_party_id()
-        if new_member_prior_party_id == self.get_id():
-            return f"{new_member.get_username()} is already in your party"
-        elif not new_member_prior_party_id:
-            self.state["members"].append(member_id)
-            self.save_state()
-            return f"added {new_member.get_username()} to your party"
-        elif new_member_prior_party_id != self.get_id():
-            return f"Can't add {new_member.get_username()} to your party -- they're already in another party!"
+    def add_members(self, members: list[object]) -> str:
+        members_added = []
+        already_partying_members = []
+        for member in members:
+            player = Player(member)
+            if player.get_party_id() and player.get_party_id() != self.get_id():
+                # player is in another party
+                already_partying_members.append(player.get_mention_tag())
+            else:
+                self.state["members"].add(player.get_id())
+                player.set_party_id(self.get_id())
+                members_added.append(player.get_mention_tag())
+        self.save_state()
+        msg = ""
+        if len(members_added):
+            msg += f"Added {StringUtil.readable_list(members_added)} to your party. "
+        if len(already_partying_members):
+            msg += f"Couldn't add {StringUtil.readable_list(already_partying_members)} -- they're already in another party!"
+        return msg
 
     def remove_member(self, member_id: int) -> str:
         try:
@@ -58,17 +68,17 @@ class Party:
         for player_id in self.get_members():
             player = Player.load(player_id)
             player.unset_party_id()
-        os.remove(self.statefile)
+        os.remove(Party.statefile(self.get_id()))
 
     def get_members(self) -> list:
-        return self.state["members"]
+        return list(self.state["members"])
 
     def get_members_as_string(self) -> str:
         player_names = []
         for player_id in self.get_members():
             player = Player.load(player_id)
-            player_names.append(player.get_username())
-        return StringUtil.readable_list(player_names, 'bold')
+            player_names.append(player.get_mention_tag())
+        return StringUtil.readable_list(player_names)
 
     def get_letters(self) -> list:
         party_letters = set()
