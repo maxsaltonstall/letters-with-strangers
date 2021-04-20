@@ -91,7 +91,7 @@ async def word(ctx, *args):
         party_id = player.get_party_id()
         if not party_id:
             party = Party()
-            party.add_member(player.get_id())
+            party.add_members([ctx.author])
             party_id = party.get_id()
         await ctx.send(Party(party_id).make_word(word, dictionary))
 
