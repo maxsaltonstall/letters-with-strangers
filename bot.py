@@ -1,6 +1,5 @@
 import os, glob, logging
 from models.player import Player
-from models.letter import Letter
 from models.party import Party
 from models.dictionary import Dictionary
 from models.util.string_util import StringUtil
@@ -17,8 +16,6 @@ description = '''A bot to help strangers make words out of letters'''
 
 # set the prefix bot will watch for
 bot = commands.Bot(command_prefix='..', description=description)
-
-all_letters = []  # list to store all letters deployed, for testing
 
 # ensure state storage directory exists
 if not os.path.exists(".lws"):
@@ -39,24 +36,7 @@ async def on_ready():
 # Currently up to 8 letters per player
 async def get(ctx):
     player = Player(ctx.author)
-    # TODO: this could probably use a refactor -- we're passing lots of stuff around
-    letter_rand = Letter.random_letter(restricted_letters=player.get_letters())
-    await ctx.send(player.add_letter(letter_rand))
-    all_letters.append(letter_rand)
-
-
-# TODO(?): remove this, or alias it to `letters`
-@bot.command(brief='See what letters you have now', description='Find out current letters owned by player', aliases=['curr', 'cu'])
-async def current(ctx):
-    player = Player(ctx.author)
-    logging.debug("Fetching letters for {}".format(player))
-    try:
-        letter_list = player.get_letters()
-        logging.debug(f"got letters for {player}: {str(letter_list)}")
-    except Exception as e:
-        logging.error(f"# Error 5 #: unable to fetch letters for {player.get_username()}")
-        logging.exception(str(e))
-    await ctx.send(f"{player}, your letters are {StringUtil.readable_list(letter_list, 'bold')}")
+    await ctx.send(player.add_letter())
 
 
 @bot.command(brief='Form a party or list party members', description='Form a party with one or more other players; usage: `party @Friend1 @Friend2` (if no players specified, get a list of current members)')
@@ -64,36 +44,12 @@ async def party(ctx, *args):
     player = Player(ctx.author)
     mentions = [mention for mention in ctx.message.mentions]
     if len(mentions):
-
-        already_partying_players = []  # players who are already in other parties
-        # ensure mentioned players are represented in state and may be added
-        for mentioned in mentions:
-            if os.path.exists(f".lws/party_{mentioned.id}.json"):
-                mentioned_player = Player()
-                mentioned_player.load_user(mentioned.id)
-            else:
-                mentioned_player = Player(mentioned)
-            if mentioned_player.get_party_id():
-                already_partying_players.append(mentioned_player.get_id())
-            
-        if len(already_partying_players):
-            partying_usernames = []
-            for user_id in already_partying_players:
-                partying_player = Player()
-                partying_player.load_user(user_id)
-                partying_usernames.append(partying_player.get_username())
-            await ctx.send(f"Unable to create party; the following player(s) are already in parties: {StringUtil.readable_list(partying_usernames)}")
+        if player.get_party_id():
+            party = Party(player.get_party_id())
         else:
-            if player.get_party_id():
-                party = Party(player.get_party_id())
-            else:
-                party = Party()
-                party.add_member(player.get_id())
-                player.set_party_id(party.get_id())  # TODO: move into Party
-            for member in mentions:
-                party.add_member(member.id)
-                Player(member).set_party_id(party.get_id())  # TODO: move into Party
-            await ctx.send(str(party))
+            party = Party()
+            party.add_members([ctx.author])
+        await ctx.send(party.add_members(mentions))
     else:
         await ctx.send(str(Party(player.get_party_id())) if player.get_party_id() else "You're not in a party! Start one with `..party @User @User2`")
 
@@ -107,7 +63,7 @@ async def leave(ctx):
     await ctx.send(msg)
 
 
-@bot.command(brief='Get party\'s letters', description='Get all letters held by members of your party')
+@bot.command(brief='Get party\'s letters', description='Get all letters held by members of your party', aliases=['curr', 'cu'])
 async def letters(ctx):
     player = Player(ctx.author)
     if(player.get_party_id()):
@@ -135,7 +91,7 @@ async def word(ctx, *args):
         party_id = player.get_party_id()
         if not party_id:
             party = Party()
-            party.add_member(player.get_id())
+            party.add_members([ctx.author])
             party_id = party.get_id()
         await ctx.send(Party(party_id).make_word(word, dictionary))
 
@@ -144,12 +100,6 @@ async def word(ctx, *args):
 async def score(ctx):
     player = Player(ctx.author)
     await ctx.send(f"{player}, your score is {player.get_score()}, and you have {player.get_money()} glyphs to spend")
-
-
-@bot.command(brief='All the letters bot has given', description='Find out what letters this bot has given out')
-async def show_all(ctx):
-    logging.debug("Full letter output requested")
-    await ctx.send(str(all_letters))
 
 
 @bot.command(brief='Greetings stranger', description='Hello and introductions')
