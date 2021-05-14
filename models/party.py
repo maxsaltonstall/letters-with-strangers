@@ -1,9 +1,10 @@
-import logging, jsonpickle, uuid, os
+import logging, uuid, os
 
 from .dictionary import Dictionary
 from .player import Player
 
 from .util.string_util import StringUtil
+from .util.datastore import save_party, load_party
 
 
 class Party:
@@ -11,8 +12,7 @@ class Party:
     def __init__(self, party_id: str = ''):
         if party_id:
             self.party_id = party_id
-            with open(Party.statefile(party_id), 'r') as statefile:
-                self.state = jsonpickle.decode(statefile.read())
+            self.state = load_party(self.party_id)
         else:
             self.state = {}
             self.state["members"] = set()  # list of member IDs
@@ -20,16 +20,11 @@ class Party:
             self.save_state()
             logging.info(f"initialized party {self.party_id}: {str(self.state['members'])}")
 
-    @staticmethod
-    def statefile(party_id: int):
-        return f".lws/party_{party_id}.json"
-
     def save_state(self):
-        jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)
-        pickled = jsonpickle.encode(self.state)
-        with open(Party.statefile(self.party_id), 'w') as statefile:
-            statefile.write(pickled)
-            statefile.close()
+        save_party(self.party_id, self.state)
+
+    def load_state(self):
+        self.state = load_party(self.party_id)
 
     def get_id(self) -> int:
         return self.party_id

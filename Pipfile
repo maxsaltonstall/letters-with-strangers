@@ -8,6 +8,7 @@ name = "pypi"
 python-dotenv = "*"
 jsonpickle = "*"
 typing-extensions = "*"
+firebase-admin = "*"
 
 [dev-packages]
 autopep8 = "*"
@@ -15,4 +16,3 @@ flake8 = "*"
 
 [requires]
 python_version = "3.9"
-

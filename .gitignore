@@ -146,3 +146,6 @@ tools/.deploy_env
 # developer tools
 .vscode
 ecosystem.config.js
+
+# Credentials for external services (e.g. Firebase)
+creds/
