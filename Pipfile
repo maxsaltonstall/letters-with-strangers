@@ -9,6 +9,7 @@ python-dotenv = "*"
 jsonpickle = "*"
 typing-extensions = "*"
 firebase-admin = "*"
+google-cloud-secret-manager = "*"
 
 [dev-packages]
 autopep8 = "*"
