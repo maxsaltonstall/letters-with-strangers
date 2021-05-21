@@ -13,21 +13,21 @@ def data_storage() -> str:
 
 # for local data storage, return location of files
 def player_statefile(player_id: int) -> str:
-    statefile_path=os.environ.get("LOCAL_STORAGE_PATH", ".lws")
+    statefile_path = os.environ.get("LOCAL_STORAGE_PATH", ".lws")
     return f"{statefile_path}/player_{player_id}.json"
 
 
 def party_statefile(party_id: int) -> str:
-    statefile_path=os.environ.get("LOCAL_STORAGE_PATH", ".lws")
+    statefile_path = os.environ.get("LOCAL_STORAGE_PATH", ".lws")
     return f"{statefile_path}/party_{party_id}.json"
 
 
 # for Firebase Realtime DB, initialize DB
 def init_db():
     if not firebase_admin._apps:  # if not already initialized
-        if os.environ.get("FIREBASE_CREDS_STORAGE","local") == "local":
+        if os.environ.get("FIREBASE_CREDS_STORAGE", "local") == "local":
             # Fetch the service account key JSON file contents
-            cred = credentials.Certificate(os.environ.get("FIREBASE_CREDS_PATH","creds/firebase.json"))
+            cred = credentials.Certificate(os.environ.get("FIREBASE_CREDS_PATH", "creds/firebase.json"))
         elif os.environ.get("FIREBASE_CREDS_STORAGE") == "secret_manager":
             
             # Fetch service account key from Secret Manager
@@ -44,6 +44,7 @@ def init_db():
         firebase_admin.initialize_app(cred, {
             'databaseURL': os.environ.get("FIREBASE_DB_PATH")
         })
+
 
 def save_player(player_id: int, player_state: dict):
 
