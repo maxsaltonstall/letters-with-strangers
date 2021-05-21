@@ -23,15 +23,47 @@ pip install pipenv
 python -m pipenv install
 ```
 
-Create a `.env` file and add this to the end of it:
+Create a `.env` file with these contents:
 ```env
-TOKEN=[insert token here]
+PYTHONPATH="."
+TOKEN=[insert discord token here]
 ```
 
 Finally, start the bot with:
 ```sh
 python bot.py
 ```
+
+## State storage
+LWS supports two backends for storing player/game state: **local**, for developing/debugging, and **firebase realtime database** for serving:
+
+### Local storage (default)
+Game state is stored in JSON files saved in the `.lws` folder (which is excluded from VCS). To use local storage, add the following line to your `.env` file:
+```
+DATA_STORAGE="local"
+LOCAL_STORAGE_PATH=".lws"
+```
+(or just skip this step, since these are the defaults)
+
+### Firebase Realtime Database
+Game state is stored in JSON format in [Firebase Realtime Database](https://firebase.google.com/docs/database). 
+
+To set up:
+1. Visit [console.firebase.google.com](https://console.firebase.google.com/) and add or open your cloud project.
+1. Open Realtime Database, then click "Create Database" to create a database in "locked mode."
+1. Copy your database URL and add it to your `.env` file:
+    ```
+    DATA_STORAGE="firebase"
+    FIREBASE_DB_PATH="https://<your_project_id>-default-rtdb.firebaseio.com/"
+    FIREBASE_CREDS_STORAGE="local"
+    FIREBASE_CREDS_PATH="creds/firebase.json"
+    ```
+1. Open Settings > Project Settings > [Service Accounts](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk).
+1. Click Generate New Private Key, then confirm by clicking Generate Key.
+1. Save it to `creds/firebase.json`
+
+(TODO: document storing Firebase creds in Secret Manager)
+
 
 ## Linting
 This repo has an Actions config that will apply the flake8 linter to all PRs.

@@ -8,6 +8,8 @@ name = "pypi"
 python-dotenv = "*"
 jsonpickle = "*"
 typing-extensions = "*"
+firebase-admin = "*"
+google-cloud-secret-manager = "*"
 
 [dev-packages]
 autopep8 = "*"
@@ -15,4 +17,3 @@ flake8 = "*"
 
 [requires]
 python_version = "3.9"
-

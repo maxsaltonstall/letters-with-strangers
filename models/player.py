@@ -1,8 +1,9 @@
-import logging, jsonpickle, random, os
+import logging, random
 from collections import defaultdict
 
 from .letter import Letter
 from .util.string_util import StringUtil
+from .util.datastore import save_player, load_player
 
 
 class Player:
@@ -10,9 +11,13 @@ class Player:
     def __init__(self, user=None):
         
         if user:
+            
             self.player_id = user.id
-            if os.path.exists(Player.statefile(user.id)):  # load existing user
-                self.state = Player.read_state(user.id)
+            
+            player_state = self.read_state(self.player_id)  # try loading player state from storage
+
+            if player_state:
+                self.state = player_state
             else:  # create new user
                 self.state = {}
                 self.state["username"] = user.name
@@ -29,20 +34,17 @@ class Player:
     def get_id(self) -> int:
         return self.player_id
 
-    @staticmethod
-    def statefile(player_id: int) -> str:
-        return f".lws/player_{player_id}.json"
+    def read_state(self, player_id: int) -> dict:
+        return load_player(player_id)
 
-    @staticmethod
-    def read_state(player_id: int) -> dict:
-        with open(Player.statefile(player_id), 'r') as statefile:
-            return jsonpickle.decode(statefile.read())
+    def save_state(self):
+        save_player(self.player_id, self.state)
 
     @classmethod
     def load(cls, player_id: int) -> object:
         player = cls()
         player.player_id = player_id
-        player.state = Player.read_state(player.player_id)
+        player.state = load_player(player.player_id)
         return player
 
     def set_party_id(self, party_id: int) -> None:
@@ -125,13 +127,6 @@ class Player:
         """return a string which, when passed in a discord message,
            will render as this player's nickname"""
         return "<@!" + str(self.get_id()) + ">"
-
-    def save_state(self):
-        jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)
-        pickled = jsonpickle.encode(self.state)
-        with open(Player.statefile(self.player_id), 'w') as statefile:
-            statefile.write(pickled)
-            statefile.close()
 
     def __str__(self):
         return self.get_username()
