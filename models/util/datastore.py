@@ -1,9 +1,8 @@
-import os, jsonpickle, logging, json
+import os, jsonpickle, logging
+from google.cloud import firestore
+from google.cloud.firestore_v1.document import DocumentReference
 
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import db
-from google.cloud import secretmanager
+
 
 
 def data_storage() -> str:
@@ -13,37 +12,31 @@ def data_storage() -> str:
 
 # for local data storage, return location of files
 def player_statefile(player_id: int) -> str:
-    statefile_path = os.environ.get("LOCAL_STORAGE_PATH", ".lws")
-    return f"{statefile_path}/player_{player_id}.json"
+    return f".lws/player_{player_id}.json"
 
 
 def party_statefile(party_id: int) -> str:
-    statefile_path = os.environ.get("LOCAL_STORAGE_PATH", ".lws")
-    return f"{statefile_path}/party_{party_id}.json"
+    return f".lws/party_{party_id}.json"
 
 
 # for Firebase Realtime DB, initialize DB
 def init_db():
-    if not firebase_admin._apps:  # if not already initialized
-        if os.environ.get("FIREBASE_CREDS_STORAGE", "local") == "local":
-            # Fetch the service account key JSON file contents
-            cred = credentials.Certificate(os.environ.get("FIREBASE_CREDS_PATH", "creds/firebase.json"))
-        elif os.environ.get("FIREBASE_CREDS_STORAGE") == "secret_manager":
-            
-            # Fetch service account key from Secret Manager
-            sec_client = secretmanager.SecretManagerServiceClient()
-            response = sec_client.access_secret_version(request={"name": os.environ.get("FIREBASE_CREDS_SECRET_MANAGER_VERSION")})
-            service_account_info = json.loads(response.payload.data.decode('utf-8'))
+    return firestore.Client()
 
-            # build credentials with the service account dict
-            cred = firebase_admin.credentials.Certificate(service_account_info)
-        else:
-            raise Exception("ERROR: Config specifies Firebase data storage, but no firebase credentials were provided.")
 
-        # Initialize the app with a service account, granting admin privileges
-        firebase_admin.initialize_app(cred, {
-            'databaseURL': os.environ.get("FIREBASE_DB_PATH")
-        })
+# get reference to firestore document
+def get_db_ref(doc_type: str) -> DocumentReference:
+    
+    db = init_db()
+
+    firestore_collection = os.environ.get("FIRESTORE_COLLECTION")
+
+    if doc_type == 'player':
+        return db.collection(firestore_collection).document("player_{player_id}")
+    elif doc_type == 'party':
+        return db.collection(firestore_collection).document("party_{party_id}")
+    else:
+        raise Exception("ERROR: unknown doc type requested from database")
 
 
 def save_player(player_id: int, player_state: dict):
@@ -56,9 +49,9 @@ def save_player(player_id: int, player_state: dict):
             statefile.write(pickled)
             statefile.close()
 
-    elif data_storage() == "firebase":  # store state in Firebase Realtime DB
-        init_db()
-        ref = db.reference(f'/player/{player_id}')
+    elif data_storage() == "firebase":  # store state in Firestore
+        
+        ref = get_db_ref('player')
         ref.set(pickled)
     
     else:
@@ -75,9 +68,9 @@ def load_player(player_id: int) -> dict:
         else:
             return None
 
-    elif data_storage() == "firebase":  # load state from Firebase Realtime DB
-        init_db()
-        ref = db.reference(f'/player/{player_id}')
+    elif data_storage() == "firestore":  # load state from Firestore
+    
+        ref = get_db_ref('player')
         player = ref.get()
 
         logging.debug(player)
@@ -103,8 +96,7 @@ def save_party(party_id: int, party_state: dict):
             statefile.close()
     
     else:
-        init_db()
-        ref = db.reference(f'/party/{party_id}')
+        ref = get_db_ref('party')
         ref.set(pickled)
 
 
@@ -120,9 +112,8 @@ def load_party(party_id: int) -> dict:
             return None
 
     else:
-        # load from firebase
-        init_db()
-        ref = db.reference(f'/party/{party_id}')
+        # load from firestore
+        ref = get_db_ref('party')
         party = ref.get()
 
         logging.debug(party)
