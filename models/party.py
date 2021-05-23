@@ -15,7 +15,7 @@ class Party:
             self.state = load_party(self.party_id)
         else:
             self.state = {}
-            self.state["members"] = set()  # list of member IDs
+            self.state["members"] = []
             self.party_id = uuid.uuid4().hex
             self.save_state()
             logging.info(f"initialized party {self.party_id}: {str(self.state['members'])}")
@@ -38,7 +38,8 @@ class Party:
                 # player is in another party
                 already_partying_members.append(player.get_mention_tag())
             else:
-                self.state["members"].add(player.get_id())
+                if player.get_id() not in self.state["members"]:
+                   self.state["members"].append(player.get_id())
                 player.set_party_id(self.get_id())
                 members_added.append(player.get_mention_tag())
         self.save_state()
@@ -66,7 +67,7 @@ class Party:
         os.remove(Party.statefile(self.get_id()))
 
     def get_members(self) -> list:
-        return list(self.state["members"])
+        return self.state["members"]
 
     def get_members_as_string(self) -> str:
         player_names = []
