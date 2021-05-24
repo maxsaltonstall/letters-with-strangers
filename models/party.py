@@ -39,7 +39,7 @@ class Party:
                 already_partying_members.append(player.get_mention_tag())
             else:
                 if player.get_id() not in self.state["members"]:
-                   self.state["members"].append(player.get_id())
+                    self.state["members"].append(player.get_id())
                 player.set_party_id(self.get_id())
                 members_added.append(player.get_mention_tag())
         self.save_state()
