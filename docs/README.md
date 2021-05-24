@@ -35,7 +35,7 @@ python bot.py
 ```
 
 ## State storage
-LWS supports two backends for storing player/game state: **local**, for developing/debugging, and **firebase realtime database** for serving:
+LWS supports two backends for storing player/game state: **local**, for developing/debugging, and **Cloud Firestore** for serving:
 
 ### Local storage (default)
 Game state is stored in JSON files saved in the `.lws` folder (which is excluded from VCS). To use local storage, add the following line to your `.env` file:
@@ -45,25 +45,17 @@ LOCAL_STORAGE_PATH=".lws"
 ```
 (or just skip this step, since these are the defaults)
 
-### Firebase Realtime Database
-Game state is stored in JSON format in [Firebase Realtime Database](https://firebase.google.com/docs/database). 
+### Datastore
+Game state is stored in [Google Cloud Firestore](https://cloud.google.com/datastore), using **Datastore Mode**. 
 
 To set up:
-1. Visit [console.firebase.google.com](https://console.firebase.google.com/) and add or open your cloud project.
-1. Open Realtime Database, then click "Create Database" to create a database in "locked mode."
-1. Copy your database URL and add it to your `.env` file:
+1. In the GCP console, visit [Cloud Firestore](https://console.cloud.google.com/firestore) and click "Select Datastore Mode" to initialize your database.
+1. Add the following to your `.env` file (removing any existing config related to storage):
     ```
-    DATA_STORAGE="firebase"
-    FIREBASE_DB_PATH="https://<your_project_id>-default-rtdb.firebaseio.com/"
-    FIREBASE_CREDS_STORAGE="local"
-    FIREBASE_CREDS_PATH="creds/firebase.json"
+    DATA_STORAGE="datastore"
     ```
-1. Open Settings > Project Settings > [Service Accounts](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk).
-1. Click Generate New Private Key, then confirm by clicking Generate Key.
-1. Save it to `creds/firebase.json`
-
-(TODO: document storing Firebase creds in Secret Manager)
-
+    * (optional) To specify a datastore namespace, add `DATASTORE_NAMESPACE=<namespace>`. If you omit this value, a namespace will be auto-generated.
+1. Configure authentication -- ensure that whichever user or service account you run LWS as has permissions to read/write Datastore entries.
 
 ## Linting
 This repo has an Actions config that will apply the flake8 linter to all PRs.

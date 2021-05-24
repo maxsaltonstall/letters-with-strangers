@@ -5,6 +5,6 @@ steps:
   args: ['push','gcr.io/$PROJECT_ID/lws']
 - name: gcr.io/cloud-builders/gcloud
   args: [
-    'compute','instances','update-container','$_STAGING_INSTANCE',
+    'compute','instances','update-container','$_GCE_INSTANCE',
     '--zone=us-central1-a','--container-image=gcr.io/${PROJECT_ID}/lws:latest'
   ]

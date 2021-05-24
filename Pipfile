@@ -8,8 +8,7 @@ name = "pypi"
 python-dotenv = "*"
 jsonpickle = "*"
 typing-extensions = "*"
-firebase-admin = "*"
-google-cloud-secret-manager = "*"
+google-cloud-datastore = "*"
 
 [dev-packages]
 autopep8 = "*"
