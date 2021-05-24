@@ -45,7 +45,7 @@ LOCAL_STORAGE_PATH=".lws"
 ```
 (or just skip this step, since these are the defaults)
 
-### Datastpre
+### Datastore
 Game state is stored in [Google Cloud Firestore](https://cloud.google.com/datastore), using **Datastore Mode**. 
 
 To set up:
@@ -54,6 +54,7 @@ To set up:
     ```
     DATA_STORAGE="datastore"
     ```
+    * (optional) To specify a datastore namespace, add `DATASTORE_NAMESPACE=<namespace>`. If you omit this value, a namespace will be auto-generated.
 1. Configure authentication -- ensure that whichever user or service account you run LWS as has permissions to read/write Datastore entries.
 
 ## Linting
