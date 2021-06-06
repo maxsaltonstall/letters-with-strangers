@@ -108,8 +108,8 @@ class Party:
             player = Player.load(player_id)
             player.remove_letters(letters)
             player.add_points(points)
-            for letter in word: # give each player xp for each letter in word
-                player.add_letter_xp(letter,1)
+            for letter in word:  # give each player xp for each letter in word
+                player.add_letter_xp(letter, 1)
         return f"you formed the word '{word}' and {' everyone' if len(self.get_members()) > 1 else ''} scored {points} points"
 
     def __str__(self):
