@@ -25,7 +25,7 @@ class Player:
                 self.state["score"] = 0  # experience
                 self.state["money"] = 0  # currency
                 self.state["handlimit"] = 8  # default for new players
-                self.state["letter_xp"] = defaultdict(int)  # track progress per letter + wildcard
+                self.state["letter_xp"] = defaultdict(0)  # track progress per letter + wildcard
                 self.save_state()
         else:  # create empty object
             self.player_id = None
@@ -115,6 +115,13 @@ class Player:
 
     def get_score(self):
         return self.state["score"]
+
+    def add_letter_xp(self, letter, points):
+        self.state["letter_xp"][letter] += points
+        self.save_state()
+
+    def get_letter_xp(self):
+        return self.state["letter_xp"]
 
     def add_money(self, cash):
         self.state["money"] += cash
