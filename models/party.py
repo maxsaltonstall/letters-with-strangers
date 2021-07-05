@@ -29,7 +29,7 @@ class Party:
     def get_id(self) -> int:
         return self.party_id
 
-    def add_members(self, members: list[object]) -> str:
+    def add_members(self, members) -> str:
         members_added = []
         already_partying_members = []
         for member in members:
