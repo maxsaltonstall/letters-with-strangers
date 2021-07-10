@@ -72,6 +72,8 @@ class Player:
             letter = Letter.random_letter(restricted_letters=self.get_letters())
             self.state["letters"].append(letter)
             self.save_state()
+            if letter in ('A', 'E', 'I', 'O', 'U'):
+                return(f"{self.state['username']}, you can have an **{letter}**")
             return(f"{self.state['username']}, you can have a **{letter}**")
 
     def cheat(self):  # for testing/developing
