@@ -99,7 +99,7 @@ async def word(ctx, *args):
 @bot.command(brief='Show me my progress', description='Get my score')
 async def score(ctx):
     player = Player(ctx.author)
-    await ctx.send(f"{player}, your score is {player.get_score()}, and you have {player.get_money()} glyphs to spend")
+    await ctx.send(f"{player}, your score is {player.get_score()}, you have {player.get_money()} glyphs to spend")
 
 
 @bot.command(brief='Greetings stranger', description='Hello and introductions')
