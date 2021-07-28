@@ -114,11 +114,11 @@ class Party:
         for player_id in self.get_members():
             player = Player.load(player_id)
             player.remove_letters(letters)
-            player.add_points(points)
+            player.add_points(word_points)
             player.add_money(word_money)
             for letter in word:  # give each player xp for each letter in word
                 player.add_letter_xp(letter, 1)
-        msg += f"you formed the word '{word}'\n{'everyone' if len(self.get_members()) > 1 else ''} scored {points} points and received {word_money} glyphs\n"
+        msg += f"you formed the word '{word}'\n{'everyone' if len(self.get_members()) > 1 else ''} scored {word_points} points and received {word_money} glyphs\n"
         return msg
 
     def __str__(self):
