@@ -22,10 +22,13 @@ class Player:
                 self.state = {}
                 self.state["username"] = user.name
                 self.state["letters"] = []
-                self.state["score"] = 0  # experience
-                self.state["money"] = 0  # currency
+                self.state["score"] = 0  # experience for advancing level
+                self.state["money"] = 0  # currency to spend on stuff
+                self.state["level"] = 1  # long term advancement
                 self.state["handlimit"] = 8  # default for new players
                 self.state["letter_xp"] = defaultdict(int)  # track progress per letter + wildcard
+                self.state["longest_word"] = ""  # best creation
+                self.state["pets"] = []
                 self.save_state()
         else:  # create empty object
             self.player_id = None
