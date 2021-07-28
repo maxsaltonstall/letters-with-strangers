@@ -1,4 +1,4 @@
-import logging, uuid, os
+import logging, uuid, os, random
 
 from .dictionary import Dictionary
 from .player import Player
@@ -89,7 +89,7 @@ class Party:
         return list_party_letters
 
     def make_word(self, word: str, dictionary: Dictionary) -> str:
-        
+        msg = ""
         if not dictionary.check_word(word):
             logging.info(f"Word '{word}' not found in dictionary {dictionary}")
             return f"Sorry, the word '{word}' isn't in my vocabulary!"
@@ -103,14 +103,23 @@ class Party:
         missing_letters.sort()
         if len(missing_letters):
             return f"unable to spell the word {word}; you don't have the letter(s) {StringUtil.readable_list(missing_letters, 'bold')}"
-        points = len(word)
+        # Calculate points and money gained
+        party_size = len(self.get_members())
+        word_size = len(word)
+        word_points = (word_size - 3) * (word_size - 2) + party_size  # add xp/score/points based on length of word and size of party
+        word_money = party_size * party_size + word_size
+        word_event_chance = (word_size * 2 + party_size)
+        if random.randint(1, 1000) < word_event_chance:
+            msg += f"You got a random event, with chance {word_event_chance} out of 1000\n"
         for player_id in self.get_members():
             player = Player.load(player_id)
             player.remove_letters(letters)
             player.add_points(points)
+            player.add_money(word_money)
             for letter in word:  # give each player xp for each letter in word
                 player.add_letter_xp(letter, 1)
-        return f"you formed the word '{word}' and {' everyone' if len(self.get_members()) > 1 else ''} scored {points} points"
+        msg += f"you formed the word '{word}'\n{'everyone' if len(self.get_members()) > 1 else ''} scored {points} points and received {word_money} glyphs\n"
+        return msg
 
     def __str__(self):
         return f"Party members: {self.get_members_as_string()}"
