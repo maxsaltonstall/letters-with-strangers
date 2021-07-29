@@ -107,7 +107,6 @@ async def word(ctx, *args):
         return("Server error! Unable to form word. 😞")
 
 
-
 @bot.command(brief='Show me my progress', description='Get my score')
 async def score(ctx):
     player = Player(ctx.author)
