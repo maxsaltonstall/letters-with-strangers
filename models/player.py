@@ -1,5 +1,4 @@
 import logging, random
-from collections import defaultdict
 
 from .letter import Letter
 from .util.string_util import StringUtil
@@ -19,6 +18,7 @@ class Player:
             if player_state:
                 self.state = player_state
             else:  # create new user
+                # TIP: use only data types that can be natively stored in Cloud Datastore (e.g. don't use defaultdict)
                 self.state = {}
                 self.state["username"] = user.name
                 self.state["letters"] = []
@@ -26,7 +26,7 @@ class Player:
                 self.state["money"] = 0  # currency to spend on stuff
                 self.state["level"] = 1  # long term advancement
                 self.state["handlimit"] = 8  # default for new players
-                self.state["letter_xp"] = defaultdict(int)  # track progress per letter + wildcard
+                self.state["letter_xp"] = {}  # track progress per letter + wildcard
                 self.state["longest_word"] = ""  # best creation
                 self.state["pets"] = []
                 self.save_state()
@@ -122,7 +122,10 @@ class Player:
         return self.state["score"]
 
     def add_letter_xp(self, letter, points):
-        self.state["letter_xp"][letter] += points
+        if letter in self.state["letter_xp"]:
+            self.state["letter_xp"][letter] += points
+        else:
+            self.state["letter_xp"][letter] = 1
         self.save_state()
 
     def get_letter_xp(self):
