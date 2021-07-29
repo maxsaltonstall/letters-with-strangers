@@ -27,3 +27,5 @@ Setting up a GCE instance:
 3. copy the contents of /home/pythonapp/.ssh/id_rsa into a new Secret Manager secret named `pythonapp-ssh-private-key`
   * be sure to add a line break at the end of "-----END OPENSSH PRIVATE KEY-----"
 4. copy the contents of /home/pythonapp/.ssh/id_rsa.pub into a new Secret Manager secret named `pythonapp-ssh-public-key`
+5. grant "secret accessor" access on both ssh secrets to the Cloud Build service account
+6. create a secret for the discord token; grant "accessor" access to the Cloud Build service account
