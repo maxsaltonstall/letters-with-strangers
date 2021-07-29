@@ -11,6 +11,8 @@ steps:
         pipenv lock -r > requirements.txt
 
         echo "TOKEN=$(gcloud secrets versions access latest --secret=lws-discord-token-staging)" > .env
+        echo "DATA_STORAGE=datastore" >> .env
+        echo "DATASTORE_NAMESPACE=staging" >> .env
 
         # write SSH keys to default location for GCE SSH access
         mkdir $$HOME/.ssh && chmod 700 $$HOME/.ssh/
