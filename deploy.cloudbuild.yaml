@@ -1,11 +1,3 @@
-# Cloud Build config to deploy LWS to a GCE instance
-
-# steps:
-
-# generate requirements.txt from pipfile
-# copy app source to server
-# restart service
-
 steps:
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     entrypoint: '/bin/bash'
