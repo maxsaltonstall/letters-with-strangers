@@ -1,0 +1,21 @@
+# Cloud Build config to deploy LWS to a GCE instance
+
+# steps:
+
+# generate requirements.txt from pipfile
+# copy app source to server
+# restart service
+
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set -xeo pipefail
+        mkdir .ssh && chmod 700 .ssh
+        gcloud secrets versions access latest --secret=pythonapp-ssh-private-key > .ssh/id_rsa
+        chmod 600 .ssh/id_rsa
+        gcloud secrets versions access latest --secret=pythonapp-ssh-public-key > .ssh/id_rsa.pub
+        chmod 644 .ssh/id_rsa.pub
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a --ssh-key-file=.ssh/id_rsa --command='cat /etc/debian_version'

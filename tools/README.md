@@ -1,31 +1,27 @@
-# Setting up a cloud-hosted server for LWS
+Setting up a GCE instance:
+1. Launch a new instance with OS: Debian 10
+2. Using the console (or gcloud), SSH to it and run the following commands:
+    ```
+    mkdir -p /opt/app
 
-## To deploy to a new GCE instance (one-time)
-```sh
-./deploy-to-gce.sh
-```
-It may take a few minutes to start up!
+    # Install Stackdriver logging agent
+    curl -sSO https://dl.google.com/cloudagents/install-logging-agent.sh
+    sudo bash install-logging-agent.sh
 
-...this will:
-- build a container image to run the bot
-- push the container to Google Container Registry (GCR)
-- launch a Google Compute Engine (GCE) instance running the container
-- write `.deploy_env` with two environment variables:
-  - $LWS_SERVER : the name of the newly-created server
-  - $PROJECT_ID : the GCP project ID
+    # Install or update needed software
+    sudo apt-get update
+    sudo apt-get install -yq git supervisor python3 python3-pip
+    sudo pip install --upgrade pip3 virtualenv
 
-## To update the running GCE instance with a new container version
-```sh
-source .deploy_env
-gcloud builds submit --tag="gcr.io/${PROJECT_ID}/lws" ..
-gcloud compute instances update-container ${LWS_SERVER} --zone=us-central1-a \
---container-image=gcr.io/${PROJECT_ID}/lws:latest
-```
-#### or
-```sh
-source .deploy_env
-gcloud builds submit --config=deploy_to_staging.cloudbuild.yaml \ --substitutions=_STAGING_INSTANCE=${LWS_SERVER}
-```
-This also takes a few minutes; the instance will be temporarily stopped while the container is updated.
-_warning: this will purge all game state from the deployed server_ 
-(TODO: support external state)
+    # Account to own server process
+    sudo useradd -m -d /home/pythonapp pythonapp
+
+    # Set ownership to newly created account
+    sudo chown -R pythonapp:pythonapp /opt/app
+
+    sudo mkdir -p /home/pythonapp/.ssh
+    ssh-keygen -t rsa -b 4096 -f /home/pythonapp/.ssh/id_rsa -C pythonapp@gcp
+    ```
+3. copy the contents of /home/pythonapp/.ssh/id_rsa into a new Secret Manager secret named `pythonapp-ssh-private-key`
+  * be sure to add a line break at the end of "-----END OPENSSH PRIVATE KEY-----"
+4. copy the contents of /home/pythonapp/.ssh/id_rsa.pub into a new Secret Manager secret named `pythonapp-ssh-public-key`
