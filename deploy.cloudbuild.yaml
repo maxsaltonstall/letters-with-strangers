@@ -12,7 +12,7 @@ steps:
     args:
       - '-c'
       - |
-        set -xeo pipefail
+        set -eo pipefail
 
         # create config files
         pip3 install pipenv
@@ -27,21 +27,16 @@ steps:
         gcloud secrets versions access latest --secret=pythonapp-ssh-public-key > $$HOME/.ssh/google_compute_engine.pub
         chmod 644 $$HOME/.ssh/google_compute_engine.pub
 
-        
-
         # Sync application files to VM
         gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a --command='mkdir -p /tmp/app'
         gcloud compute scp --zone=us-central1-a --recurse * pythonapp@staging-20210728a:/tmp/app
-        gcloud compute scp --zone=us-central1-a --recurse .env pythonapp@staging-20210728a:/tmp/app
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
-          --command='sudo rm -rf /opt/app && sudo mv /tmp/app /opt'
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
-          --command='virtualenv -p python3 /opt/app/env'
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
-          --command='sudo cp /opt/app/tools/python-app.conf /etc/supervisor/conf.d/python-app.conf'
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
-          --command='bash -c "source /opt/app/env/bin/activate"'
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
-          --command='/opt/app/env/bin/pip install -r /opt/app/requirements.txt'
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
-          --command='sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl restart pythonapp'
+        gcloud compute scp --zone=us-central1-a .env pythonapp@staging-20210728a:/tmp/app
+
+        # Move files into place and restart the service
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a --command=' \
+          sudo rm -rf /opt/app && sudo mv /tmp/app /opt && \
+          virtualenv -p python3 /opt/app/env && \
+          sudo cp /opt/app/tools/python-app.conf /etc/supervisor/conf.d/python-app.conf && \
+          bash -c "source /opt/app/env/bin/activate" && \
+          /opt/app/env/bin/pip install -r /opt/app/requirements.txt && \
+          sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl restart pythonapp'
