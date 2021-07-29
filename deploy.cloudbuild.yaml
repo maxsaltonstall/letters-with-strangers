@@ -8,14 +8,38 @@
 
 steps:
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    entrypoint: 'bash'
+    entrypoint: '/bin/bash'
     args:
       - '-c'
       - |
         set -xeo pipefail
-        mkdir .ssh && chmod 700 .ssh
-        gcloud secrets versions access latest --secret=pythonapp-ssh-private-key > .ssh/id_rsa
-        chmod 600 .ssh/id_rsa
-        gcloud secrets versions access latest --secret=pythonapp-ssh-public-key > .ssh/id_rsa.pub
-        chmod 644 .ssh/id_rsa.pub
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a --ssh-key-file=.ssh/id_rsa --command='cat /etc/debian_version'
+
+        pip3 install pipenv
+        pipenv lock -r > requirements.txt
+
+        # write SSH keys to default location for GCE SSH access
+        mkdir $$HOME/.ssh && chmod 700 $$HOME/.ssh/
+        gcloud secrets versions access latest --secret=pythonapp-ssh-private-key > $$HOME/.ssh/google_compute_engine
+        chmod 600 $$HOME/.ssh/google_compute_engine
+        gcloud secrets versions access latest --secret=pythonapp-ssh-public-key > $$HOME/.ssh/google_compute_engine.pub
+        chmod 644 $$HOME/.ssh/google_compute_engine.pub
+
+        
+
+        # Sync application files to VM
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a --command='mkdir -p /tmp/app'
+        gcloud compute scp --zone=us-central1-a --recurse ./* pythonapp@staging-20210728a:/tmp/app
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+          --command='sudo rm -rf /opt/app && sudo mv /tmp/app /opt'
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+          --command='virtualenv -p python3 /opt/app/env'
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+          --command='sudo cp /opt/app/tools/python-app.conf /etc/supervisor/conf.d/python-app.conf'
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+          --command='bash -c "source /opt/app/env/bin/activate"'
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+          --command='/opt/app/env/bin/pip install -r /opt/app/requirements.txt'
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+          --command='echo "TOKEN=$(gcloud secrets versions access latest --secret=lws-discord-token-staging)" > /opt/app/.env'
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+          --command='sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl restart pythonapp'

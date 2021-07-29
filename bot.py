@@ -1,4 +1,5 @@
 import os, glob, logging
+import google.cloud.logging
 from models.player import Player
 from models.party import Party
 from models.dictionary import Dictionary
@@ -8,11 +9,17 @@ from discord.ext import commands
 
 from dotenv import load_dotenv
 
+description = '''A bot to help strangers make words out of letters'''
+
+# start up Google Cloud Logging
+client = google.cloud.logging.Client()
+client.get_default_handler()
+client.setup_logging()
+logging.info("Starting Server...")
+
 load_dotenv(override=True)
 token = os.environ["TOKEN"]
 lexicon = os.environ.get("LEXICON", "sowpods")  # specify a dictionary; default to SOWPODS
-
-description = '''A bot to help strangers make words out of letters'''
 
 # set the prefix bot will watch for
 bot = commands.Bot(command_prefix='..', description=description)

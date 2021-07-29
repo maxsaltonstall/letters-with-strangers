@@ -11,13 +11,15 @@ Setting up a GCE instance:
     # Install or update needed software
     sudo apt-get update
     sudo apt-get install -yq git supervisor python3 python3-pip
-    sudo pip install --upgrade pip3 virtualenv
+    sudo pip3 install --upgrade virtualenv
 
     # Account to own server process
     sudo useradd -m -d /home/pythonapp pythonapp
 
     # Set ownership to newly created account
     sudo chown -R pythonapp:pythonapp /opt/app
+
+    sudo service supervisor start
 
     sudo mkdir -p /home/pythonapp/.ssh
     ssh-keygen -t rsa -b 4096 -f /home/pythonapp/.ssh/id_rsa -C pythonapp@gcp
