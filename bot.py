@@ -1,4 +1,5 @@
 import os, glob, logging
+import google.cloud.logging
 from models.player import Player
 from models.party import Party
 from models.dictionary import Dictionary
@@ -8,11 +9,17 @@ from discord.ext import commands
 
 from dotenv import load_dotenv
 
+description = '''A bot to help strangers make words out of letters'''
+
+# start up Google Cloud Logging
+client = google.cloud.logging.Client()
+client.get_default_handler()
+client.setup_logging()
+logging.info("Starting Server...")
+
 load_dotenv(override=True)
 token = os.environ["TOKEN"]
 lexicon = os.environ.get("LEXICON", "sowpods")  # specify a dictionary; default to SOWPODS
-
-description = '''A bot to help strangers make words out of letters'''
 
 # set the prefix bot will watch for
 bot = commands.Bot(command_prefix='..', description=description)
@@ -84,16 +91,20 @@ async def letters(ctx):
 
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
 async def word(ctx, *args):
-    if len(args):
-        word = args[0].upper()
-        dictionary = Dictionary(lexicon)
-        player = Player(ctx.author)
-        party_id = player.get_party_id()
-        if not party_id:
-            party = Party()
-            party.add_members([ctx.author])
-            party_id = party.get_id()
-        await ctx.send(Party(party_id).make_word(word, dictionary))
+    try:
+        if len(args):
+            word = args[0].upper()
+            dictionary = Dictionary(lexicon)
+            player = Player(ctx.author)
+            party_id = player.get_party_id()
+            if not party_id:
+                party = Party()
+                party.add_members([ctx.author])
+                party_id = party.get_id()
+            await ctx.send(Party(party_id).make_word(word, dictionary))
+    except Exception as e:
+        logging.exception(str(e))
+        return("Server error! Unable to form word. 😞")
 
 
 @bot.command(brief='Show me my progress', description='Get my score')

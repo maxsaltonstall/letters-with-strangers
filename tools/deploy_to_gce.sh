@@ -1,3 +1,5 @@
+### !!! DEPRECATED -- we're no longer running as a container on VM !!!
+
 #!/bin/bash
 
 # script to deploy a containerized version of LWS to a GCE instance
