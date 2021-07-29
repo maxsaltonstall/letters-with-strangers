@@ -14,8 +14,11 @@ steps:
       - |
         set -xeo pipefail
 
+        # create config files
         pip3 install pipenv
         pipenv lock -r > requirements.txt
+
+        echo "TOKEN=$(gcloud secrets versions access latest --secret=lws-discord-token-staging)" > .env
 
         # write SSH keys to default location for GCE SSH access
         mkdir $$HOME/.ssh && chmod 700 $$HOME/.ssh/
@@ -28,7 +31,8 @@ steps:
 
         # Sync application files to VM
         gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a --command='mkdir -p /tmp/app'
-        gcloud compute scp --zone=us-central1-a --recurse ./* pythonapp@staging-20210728a:/tmp/app
+        gcloud compute scp --zone=us-central1-a --recurse * pythonapp@staging-20210728a:/tmp/app
+        gcloud compute scp --zone=us-central1-a --recurse .env pythonapp@staging-20210728a:/tmp/app
         gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
           --command='sudo rm -rf /opt/app && sudo mv /tmp/app /opt'
         gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
@@ -39,7 +43,5 @@ steps:
           --command='bash -c "source /opt/app/env/bin/activate"'
         gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
           --command='/opt/app/env/bin/pip install -r /opt/app/requirements.txt'
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
-          --command='echo "TOKEN=$(gcloud secrets versions access latest --secret=lws-discord-token-staging)" > /opt/app/.env'
         gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
           --command='sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl restart pythonapp'
