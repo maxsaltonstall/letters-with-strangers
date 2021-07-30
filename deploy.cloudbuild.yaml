@@ -6,31 +6,29 @@ steps:
       - |
         set -eo pipefail
 
-        # create config files
+        echo "creating config files"
         pip3 install pipenv
         pipenv lock -r > requirements.txt
 
-        echo "TOKEN=$(gcloud secrets versions access latest --secret=lws-discord-token-staging)" > .env
-        echo "DATA_STORAGE=datastore" >> .env
-        echo "DATASTORE_NAMESPACE=staging" >> .env
+        touch .env
+        echo "TOKEN=$(gcloud secrets versions access latest --secret=lws-discord-token-staging)" >> .env
 
-        # write SSH keys to default location for GCE SSH access
+        echo "fetching SSH keys"
         mkdir $$HOME/.ssh && chmod 700 $$HOME/.ssh/
         gcloud secrets versions access latest --secret=pythonapp-ssh-private-key > $$HOME/.ssh/google_compute_engine
         chmod 600 $$HOME/.ssh/google_compute_engine
         gcloud secrets versions access latest --secret=pythonapp-ssh-public-key > $$HOME/.ssh/google_compute_engine.pub
         chmod 644 $$HOME/.ssh/google_compute_engine.pub
 
-        # Sync application files to VM
+        echo "synching application files"
         gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a --command='mkdir -p /tmp/app'
         gcloud compute scp --zone=us-central1-a --recurse * pythonapp@staging-20210728a:/tmp/app
         gcloud compute scp --zone=us-central1-a .env pythonapp@staging-20210728a:/tmp/app
 
-        # Move files into place and restart the service
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a --command=' \
-          sudo rm -rf /opt/app && sudo mv /tmp/app /opt && \
-          virtualenv -p python3 /opt/app/env && \
-          sudo cp /opt/app/tools/python-app.conf /etc/supervisor/conf.d/python-app.conf && \
-          bash -c "source /opt/app/env/bin/activate" && \
-          /opt/app/env/bin/pip install -r /opt/app/requirements.txt && \
-          sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl restart pythonapp'
+        echo "moving application files into place"
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+          --command='sudo rm -rf /opt/app && sudo mv /tmp/app /opt'
+        
+        echo "reloading application"
+        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+          --command='sudo /opt/app/tools/gce_startup_script.sh'
