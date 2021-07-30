@@ -31,9 +31,9 @@ source /opt/app/env/bin/activate
 /opt/app/env/bin/pip install -r /opt/app/requirements.txt
 
 # populate application config
-DISCORD_TOKEN_SECRET_NAME=$(curl 'http://metadata.google.internal/computeMetadata/v1/instance/attributes/DISCORD_TOKEN_SECRET' --silent --fail --show-error --header 'Metadata-Flavor: Google')
+DISCORD_TOKEN_SECRET_NAME=$(curl 'http://metadata.google.internal/computeMetadata/v1/instance/attributes/DISCORD_TOKEN_SECRET_NAME' --silent --fail --show-error --header 'Metadata-Flavor: Google')
 DATASTORE_NAMESPACE=$(curl 'http://metadata.google.internal/computeMetadata/v1/instance/attributes/DATASTORE_NAMESPACE' --silent --fail --show-error --header 'Metadata-Flavor: Google')
-echo "TOKEN=$(gcloud secrets versions access latest --secret=$DISCORD_TOKEN_SECRET_NAME)" > .env
+echo "TOKEN=$(gcloud secrets versions access latest --secret=$DISCORD_TOKEN_SECRET_NAME)" > /opt/app/.env
 echo 'DATA_STORAGE=datastore' >> /opt/app/.env
 echo "DATASTORE_NAMESPACE=$DATASTORE_NAMESPACE" >> /opt/app/.env
 
