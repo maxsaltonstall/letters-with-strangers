@@ -6,29 +6,24 @@ steps:
       - |
         set -eo pipefail
 
-        echo "creating config files"
-        pip3 install pipenv
-        pipenv lock -r > requirements.txt
-
-        touch .env
-        echo "TOKEN=$(gcloud secrets versions access latest --secret=lws-discord-token-staging)" >> .env
-
         echo "fetching SSH keys"
         mkdir $$HOME/.ssh && chmod 700 $$HOME/.ssh/
-        gcloud secrets versions access latest --secret=pythonapp-ssh-private-key > $$HOME/.ssh/google_compute_engine
+        gcloud secrets versions access latest --secret=$_SSH_PRIVATE_KEY_SECRET > $$HOME/.ssh/google_compute_engine
         chmod 600 $$HOME/.ssh/google_compute_engine
-        gcloud secrets versions access latest --secret=pythonapp-ssh-public-key > $$HOME/.ssh/google_compute_engine.pub
+        gcloud secrets versions access latest --secret=$_SSH_PUBLIC_KEY_SECRET > $$HOME/.ssh/google_compute_engine.pub
         chmod 644 $$HOME/.ssh/google_compute_engine.pub
 
         echo "synching application files"
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a --command='mkdir -p /tmp/app'
-        gcloud compute scp --zone=us-central1-a --recurse * pythonapp@staging-20210728a:/tmp/app
-        gcloud compute scp --zone=us-central1-a .env pythonapp@staging-20210728a:/tmp/app
+        gcloud compute ssh pythonapp@$_GCE_INSTANCE --zone=us-central1-a --command='mkdir -p /tmp/app'
+        gcloud compute scp --zone=us-central1-a --recurse * pythonapp@$_GCE_INSTANCE:/tmp/app
 
         echo "moving application files into place"
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+        gcloud compute ssh pythonapp@$_GCE_INSTANCE --zone=us-central1-a \
           --command='sudo rm -rf /opt/app && sudo mv /tmp/app /opt'
         
         echo "reloading application"
-        gcloud compute ssh pythonapp@staging-20210728a --zone=us-central1-a \
+        gcloud compute ssh pythonapp@$_GCE_INSTANCE --zone=us-central1-a \
           --command='sudo /opt/app/tools/gce_startup_script.sh'
+substitutions:
+  _SSH_PRIVATE_KEY_SECRET: pythonapp-ssh-private-key
+  _SSH_PUBLIC_KEY_SECRET: pythonapp-ssh-public-key
