@@ -108,3 +108,17 @@ def load_party(party_id: int) -> dict:
             return party_state
         else:
             return None
+
+def disband_party(party_id: int, players: list):
+
+    for player_id in players:
+        player_state = load_player(player_id)
+        del player_state['party']
+        save_player(player_id, player_state)
+
+    if data_storage() == "local":
+        os.remove(party_statefile(party_id))
+    else:
+        client = get_db_client()
+        party_record = datastore.Entity(client.key("Party", party_id))
+        client.delete(party_record)

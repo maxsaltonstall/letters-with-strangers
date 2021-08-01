@@ -4,7 +4,7 @@ from .dictionary import Dictionary
 from .player import Player
 
 from .util.string_util import StringUtil
-from .util.datastore import save_party, load_party
+from .util.datastore import save_party, load_party, disband_party
 
 
 class Party:
@@ -55,16 +55,10 @@ class Party:
             self.state["members"].remove(member_id)
             self.save_state()
             if len(self.get_members()) <= 1:
-                self.disband_party()
+                disband_party(self.get_id(), self.get_members())
             return "You've left that party."
         except ValueError:
             return "Error: member not found in party"
-
-    def disband_party(self) -> None:
-        for player_id in self.get_members():
-            player = Player.load(player_id)
-            player.unset_party_id()
-        os.remove(Party.statefile(self.get_id()))
 
     def get_members(self) -> list:
         return self.state["members"]
@@ -119,6 +113,8 @@ class Party:
             for letter in letters:  # give each player xp for each letter in word
                 player.add_letter_xp(letter, 1)
         msg += f"you formed the word '{word}'\n{'everyone' if len(self.get_members()) > 1 else ''} scored {word_points} points and received {word_money} glyphs\n"
+        if party_size == 1:
+            disband_party(self.party_id, self.get_members())
         return msg
 
     def __str__(self):
