@@ -11,11 +11,12 @@ from dotenv import load_dotenv
 
 description = '''A bot to help strangers make words out of letters'''
 
-# start up Google Cloud Logging
-client = google.cloud.logging.Client()
-client.get_default_handler()
-client.setup_logging()
-logging.info("Starting Server...")
+if os.environ.get("CLOUD_LOGGING", "off") == "on":
+    # start up Google Cloud Logging
+    client = google.cloud.logging.Client()
+    client.get_default_handler()
+    client.setup_logging()
+    logging.info("Starting Server...")
 
 load_dotenv(override=True)
 token = os.environ["TOKEN"]
