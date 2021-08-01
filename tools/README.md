@@ -12,4 +12,5 @@ Server config...
       - `startup-script`: (contents of `gce_startup_script.sh`)
       - `DATASTORE_NAMESPACE`: (a scope for this server's persistent storage, e.g. "production" or "staging")
       - `DISCORD_TOKEN_SECRET_NAME`: the name of the secret containing the discord token
+      - `CLOUD_LOGGING`: on
 - configure deploy triggers for Cloud Build
