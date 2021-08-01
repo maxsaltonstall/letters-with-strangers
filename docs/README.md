@@ -25,7 +25,6 @@ python -m pipenv install
 
 Create a `.env` file with these contents:
 ```env
-PYTHONPATH="."
 TOKEN=[insert discord token here]
 ```
 
