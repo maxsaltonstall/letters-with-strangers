@@ -96,20 +96,25 @@ async def letters(ctx):
 
 @bot.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
 async def word(ctx, *args):
-    try:
-        if len(args):
-            word = args[0].upper()
-            dictionary = Dictionary(lexicon)
-            player = Player(ctx.author)
-            party_id = player.get_party_id()
-            if not party_id:
-                party = Party()
-                party.add_members([ctx.author])
-                party_id = party.get_id()
-            await ctx.send(Party(party_id).make_word(word, dictionary))
-    except Exception as e:
-        logging.exception(str(e))
-        await ctx.send("Server error! Unable to form word. 😞")
+    if not len(args):
+        await ctx.send("Please specify a word, like `..word orthography`")
+    else:
+        word = args[0].upper()
+        message = await ctx.send(f"Checking dictionary for {word}…")
+        try:
+            if len(args):
+                dictionary = Dictionary(lexicon)
+                player = Player(ctx.author)
+                party_id = player.get_party_id()
+                if not party_id:
+                    party = Party()
+                    party.add_members([ctx.author])
+                    party_id = party.get_id()
+                await message.edit(content=Party(party_id).make_word(word, dictionary))
+
+        except Exception as e:
+            logging.exception(str(e))
+            await ctx.send("Server error! Unable to form word. 😞")
 
 
 @bot.command(brief='Show me my progress', description='Get my score')
