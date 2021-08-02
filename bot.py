@@ -1,4 +1,4 @@
-import os, glob, logging
+import os, logging
 import google.cloud.logging
 from models.player import Player
 from models.party import Party
