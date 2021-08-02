@@ -1,4 +1,4 @@
-import logging, uuid, os, random
+import logging, uuid, random
 
 from .dictionary import Dictionary
 from .player import Player

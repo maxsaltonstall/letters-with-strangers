@@ -109,6 +109,7 @@ def load_party(party_id: int) -> dict:
         else:
             return None
 
+
 def disband_party(party_id: int, players: list):
 
     for player_id in players:
