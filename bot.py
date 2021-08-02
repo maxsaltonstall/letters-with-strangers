@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 description = '''A bot to help strangers make words out of letters'''
 
-if os.environ.get("CLOUD_LOGGING", "off") == "on":
+if os.environ.get("DEPLOYMENT_CONTEXT", "local") == "gce":
     # start up Google Cloud Logging
     client = google.cloud.logging.Client()
     client.get_default_handler()
@@ -145,15 +145,6 @@ async def shuffle(ctx):
 async def purge(ctx):
     player = Player(ctx.author)
     await ctx.send(player.purge())
-
-
-@bot.command(brief='[debug] delete all state', description='FOR DEVELOPMENT ONLY! Delete all state files.')
-async def purge_all_state(ctx):
-    # TODO: make sure this can't run on prod
-    files = glob.glob('.lws/*')
-    for f in files:
-        os.remove(f)
-    await ctx.send("💥 💥 💥 purged ALL state 💥 💥 💥")
 
 
 bot.run(token)
