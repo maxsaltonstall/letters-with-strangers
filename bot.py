@@ -49,17 +49,21 @@ async def get(ctx):
 
 @bot.command(brief='Form a party or list party members', description='Form a party with one or more other players; usage: `party @Friend1 @Friend2` (if no players specified, get a list of current members)')
 async def party(ctx, *args):
-    player = Player(ctx.author)
-    mentions = [mention for mention in ctx.message.mentions]
-    if len(mentions):
-        if player.get_party_id():
-            party = Party(player.get_party_id())
+    try:
+        player = Player(ctx.author)
+        mentions = [mention for mention in ctx.message.mentions]
+        if len(mentions):
+            if player.get_party_id():
+                party = Party(player.get_party_id())
+            else:
+                party = Party()
+                party.add_members([ctx.author])
+            await ctx.send(party.add_members(mentions))
         else:
-            party = Party()
-            party.add_members([ctx.author])
-        await ctx.send(party.add_members(mentions))
-    else:
-        await ctx.send(str(Party(player.get_party_id())) if player.get_party_id() else "You're not in a party! Start one with `..party @User @User2`")
+            await ctx.send(str(Party(player.get_party_id())) if player.get_party_id() else "You're not in a party! Start one with `..party @User @User2`")
+    except Exception as e:
+        logging.exception(str(e))
+        await ctx.send("Server error! Unable to complete `party` request. 😞")
 
 
 @bot.command(brief='Leave your party', description='Leave your current party, if you\'re in one')
@@ -105,7 +109,7 @@ async def word(ctx, *args):
             await ctx.send(Party(party_id).make_word(word, dictionary))
     except Exception as e:
         logging.exception(str(e))
-        return("Server error! Unable to form word. 😞")
+        await ctx.send("Server error! Unable to form word. 😞")
 
 
 @bot.command(brief='Show me my progress', description='Get my score')
