@@ -98,7 +98,7 @@ async def letters(ctx):
 async def word(ctx, *args):
     if not len(args):
         await ctx.send("Please specify a word, like `..word orthography`")
-    else:    
+    else:
         word = args[0].upper()
         message = await ctx.send(f"Checking dictionary for {word}…")
         try:
