@@ -10,17 +10,16 @@ git clone https://github.com/davidstanke/letters-with-strangers
 cd letters-with-strangers
 ```
 
-Install pipenv (if you don't already have it installed)
+Install virtualenv (if you don't already have it installed)
 ```sh
-pip3 install pipenv
+pip3 install virtualenv
 ```
 
-This project uses [pipenv](https://pypi.org/project/pipenv/) to manage packages and provide virtualization.
-Initialize a pipenv virtual environment and install dependencies into it:
+Initialize a virtual environment and install dependencies into it:
 ```sh
-python -m pipenv shell
-pip install pipenv
-python -m pipenv install
+virtualenv venv
+source venv/bin/activate
+pip3 install -r requirements-dev.txt
 ```
 
 Create a `.env` file with these contents:
@@ -31,6 +30,11 @@ TOKEN=[insert discord token here]
 Finally, start the bot with:
 ```sh
 python bot.py
+```
+
+To exit the virtualenv:
+```sh
+deactivate
 ```
 
 ## State storage
@@ -58,9 +62,9 @@ To set up:
 
 ## Linting
 This repo has an Actions config that will apply the flake8 linter to all PRs.
-To run the linter locally (within your pipenv shell):
+To run the linter locally (within your virtualenv):
 ```sh
-pipenv install --dev
+pip3 install -r requirements-dev.txt
 python -m flake8
 ```
 

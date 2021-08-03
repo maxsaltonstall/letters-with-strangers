@@ -1,6 +1,6 @@
 To start:
 ```sh
-python -m pipenv shell
+source venv/bin/activate
 ```
 
 You can start monitoring with
