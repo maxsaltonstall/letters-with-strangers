@@ -151,5 +151,6 @@ async def purge(ctx):
     player = Player(ctx.author)
     await ctx.send(player.purge())
 
+
 def start():
     bot.run(token)
