@@ -1,9 +1,9 @@
 import os, logging
 import google.cloud.logging
-from models.player import Player
-from models.party import Party
-from models.dictionary import Dictionary
-from models.util.string_util import StringUtil
+from .models.player import Player
+from .models.party import Party
+from .models.dictionary import Dictionary
+from .models.util.string_util import StringUtil
 
 from discord.ext import commands
 
@@ -152,4 +152,5 @@ async def purge(ctx):
     await ctx.send(player.purge())
 
 
-bot.run(token)
+def start():
+    bot.run(token)

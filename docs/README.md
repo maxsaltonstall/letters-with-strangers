@@ -29,7 +29,7 @@ TOKEN=[insert discord token here]
 
 Finally, start the bot with:
 ```sh
-python bot.py
+python main.py
 ```
 
 To exit the virtualenv:
