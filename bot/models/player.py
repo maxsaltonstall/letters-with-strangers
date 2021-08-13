@@ -121,6 +121,24 @@ class Player:
     def get_score(self):
         return self.state["score"]
 
+    def get_progress(self):
+        msg = ""
+        msg += f"Player profile\n"
+        msg += f"┌────────────────────────────\n"
+        msg += f"│{self.get_username()}\n"
+        msg += f"│Level: 1\n"
+        msg += f"│Score: {self.get_score()}\n"
+        msg += f"│Glyphs: {self.get_money()}\n"
+        msg += f"│Letter XP: TBD\n"
+        msg += f"│────────────────────────────\n"
+        msg += f"│A  B  C  D  E  F  G  H  I  J  K  L  M  \n"
+        msg += f"│\n"
+        msg += f"│N  O  P  Q  R  S  T  U  V  W  X  Y  Z\n"
+        msg += f"│\n"
+        # TODO add letter XP here
+        msg += f"└────────────────────────────\n"
+        return msg
+
     def add_letter_xp(self, letter, points):
         if letter in self.state["letter_xp"]:
             self.state["letter_xp"][letter] += points
