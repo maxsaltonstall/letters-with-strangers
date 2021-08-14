@@ -129,7 +129,7 @@ Player profile
 │Level: 1
 │Score: {self.get_score()}
 │Glyphs: {self.get_money()}
-│Letter XP: TBD
+│Letter XP: 
 │────────────────────────────
 │A   B   C   D   E   F   G   H   I   J   K   L   M
 │{'{:3d}'.format(1)} {'{:3d}'.format(2)} {'{:3d}'.format(3)}
