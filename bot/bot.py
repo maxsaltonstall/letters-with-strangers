@@ -117,10 +117,16 @@ async def word(ctx, *args):
             await ctx.send("Server error! Unable to form word. 😞")
 
 
-@bot.command(brief='Show me my progress', description='Get my score')
+@bot.command(brief='Show me my score', description='Get my score')
 async def score(ctx):
     player = Player(ctx.author)
     await ctx.send(f"{player}, your score is {player.get_score()}, you have {player.get_money()} glyphs to spend")
+
+
+@bot.command(brief='Show me my progress', description='Get my full profile and progress', aliases=['pr', 'profile', 'prog'])
+async def progress(ctx):
+    player = Player(ctx.author)
+    await ctx.send(player.get_progress())
 
 
 @bot.command(brief='Greetings stranger', description='Hello and introductions')
