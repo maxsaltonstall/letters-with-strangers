@@ -132,7 +132,7 @@ Player profile
 │Letter XP: TBD
 │────────────────────────────
 │A   B   C   D   E   F   G   H   I   J   K   L   M
-│{'{:3d}'.format('4')}
+│{'{:3d}'.format(1)} {'{:3d}'.format(2)} {'{:3d}'.format(3)}
 │N   O   P   Q   R   S   T   U   V   W   X   Y   Z
 │
 └────────────────────────────"""
