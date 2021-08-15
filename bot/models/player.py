@@ -1,4 +1,7 @@
 import logging, random
+from collections import defaultdict
+
+import discord
 
 from .letter import Letter
 from .util.string_util import StringUtil
@@ -121,20 +124,18 @@ class Player:
     def get_score(self):
         return self.state["score"]
 
-    def get_progress(self):
-        letter_xp_string = StringUtil.format_player_xp(self.get_letter_xp())
-        msg = f"""
-Player profile
-┌───────────────────────────
-│{self.get_username()}
-│Level: 1
-│Score: {self.get_score()}
-│Glyphs: {self.get_money()}
-│Letter XP:
-│────────────────────────────
-│{letter_xp_string}
-└────────────────────────────"""
-        return msg
+    async def show_progress(self, ctx):
+        letter_xp = defaultdict(int,self.get_letter_xp())
+
+        embed=discord.Embed(
+            title=f"Player profile: {self.get_username()}", 
+            description=f"Level: {self.get_level()}  |  Score: {self.get_score()}  |  Glyphs: {self.get_money()}")
+        embed.add_field(name="Letter XP:", value="----------------------------------------", inline=False)
+        for i in range(1,26):
+            letter=chr(i+64)
+            embed.add_field(name=f"{letter}", value=f"{letter_xp[letter]}", inline=True)
+        
+        await ctx.send(embed=embed)
 
     def add_letter_xp(self, letter, points):
         if letter in self.state["letter_xp"]:
@@ -149,7 +150,10 @@ Player profile
     def add_money(self, cash):
         self.state["money"] += cash
         self.save_state()
-               
+
+    def get_level(self):
+        return self.state["level"]
+
     def get_money(self):
         return self.state["money"]
 

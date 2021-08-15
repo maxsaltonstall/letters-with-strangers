@@ -126,7 +126,7 @@ async def score(ctx):
 @bot.command(brief='Show me my progress', description='Get my full profile and progress', aliases=['pr', 'profile', 'prog'])
 async def progress(ctx):
     player = Player(ctx.author)
-    await ctx.send(player.get_progress())
+    await player.show_progress(ctx)
 
 
 @bot.command(brief='Greetings stranger', description='Hello and introductions')
@@ -146,7 +146,7 @@ async def cheat(ctx):
     await ctx.send("Okay cheaty! You cheated.")
 
 
-@bot.command(breif="Shuffles your hand", description="Shuffles your hand!")
+@bot.command(brief="Shuffles your hand", description="Shuffles your hand!")
 async def shuffle(ctx):
     player = Player(ctx.author)
     await ctx.send(player.shuffle_letters())
