@@ -26,10 +26,10 @@ class StringUtil:
     def format_player_xp(letter_xp: dict, row_length: int = 4) -> str:
         """Receives a dict of a player's Letter XP points, and returns
            a string formatted for return as part of the 'progress' message."""
-        letter_xp_string=''
-        letter_xp=defaultdict(int,letter_xp)
-        for i in range(1,27):
-            letter=chr(i+64)
+        letter_xp_string = ''
+        letter_xp = defaultdict(int, letter_xp)
+        for i in range(1, 27):
+            letter = chr(i + 64)
             letter_xp_string += f"{StringUtil.emoji_letter(letter)} `{'{:4d}'.format(letter_xp[letter])}`\u2000\u2000\u2000"
             if i % row_length == 0:
                 letter_xp_string += '\n\n'

@@ -1,5 +1,4 @@
 import logging, random
-from collections import defaultdict
 
 import discord
 
@@ -128,8 +127,8 @@ class Player:
 
         letter_xp_string = StringUtil.format_player_xp(self.get_letter_xp())
 
-        embed=discord.Embed(
-            title=f"Player profile: {self.get_username()}", 
+        embed = discord.Embed(
+            title=f"Player profile: {self.get_username()}",
             description=f"""
                 ...................................................
                 Level: **{self.get_level()}**
@@ -137,10 +136,10 @@ class Player:
                 Glyphs: **{self.get_money()}**
                 ...................................................
                 """
-                )
+        )
         embed.add_field(
-            name="Letter XP:", 
-            value=f"{letter_xp_string}", 
+            name="Letter XP:",
+            value=f"{letter_xp_string}",
             inline=False)
         
         await ctx.send(embed=embed)
