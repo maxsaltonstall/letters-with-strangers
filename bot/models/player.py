@@ -125,15 +125,23 @@ class Player:
         return self.state["score"]
 
     async def show_progress(self, ctx):
-        letter_xp = defaultdict(int,self.get_letter_xp())
+
+        letter_xp_string = StringUtil.format_player_xp(self.get_letter_xp())
 
         embed=discord.Embed(
             title=f"Player profile: {self.get_username()}", 
-            description=f"Level: {self.get_level()}  |  Score: {self.get_score()}  |  Glyphs: {self.get_money()}")
-        embed.add_field(name="Letter XP:", value="----------------------------------------", inline=False)
-        for i in range(1,26):
-            letter=chr(i+64)
-            embed.add_field(name=f"{letter}", value=f"{letter_xp[letter]}", inline=True)
+            description=f"""
+                ...................................................
+                Level: **{self.get_level()}**
+                Score: **{self.get_score()}**
+                Glyphs: **{self.get_money()}**
+                ...................................................
+                """
+                )
+        embed.add_field(
+            name="Letter XP:", 
+            value=f"{letter_xp_string}", 
+            inline=False)
         
         await ctx.send(embed=embed)
 
