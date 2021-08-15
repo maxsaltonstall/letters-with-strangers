@@ -20,7 +20,7 @@ class StringUtil:
            a string formatted for return as part of the 'progres' message."""
         letter_xp_string=''
         letter_xp=defaultdict(int,letter_xp)
-        for i in range(1,26):
+        for i in range(1,27):
             letter=chr(i+64)
             letter_xp_string += f"**{letter}:** {'{:3d}'.format(letter_xp[letter])}  "
             if i % row_length == 0:
