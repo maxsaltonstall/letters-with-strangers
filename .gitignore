@@ -1,3 +1,8 @@
+# There may be some node
+node_modules/
+package-lock.json
+package.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

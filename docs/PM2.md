@@ -25,3 +25,5 @@ To stop the program, just do:
 npx pm2 stop lws-bot
 ```
 
+**If PM2 doesn't work, you might try nodemon instead**
+
