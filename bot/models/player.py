@@ -122,6 +122,7 @@ class Player:
         return self.state["score"]
 
     def get_progress(self):
+        letter_xp_string = StringUtil.format_player_xp(self.get_letter_xp())
         msg = f"""
 Player profile
 ┌───────────────────────────
@@ -131,10 +132,7 @@ Player profile
 │Glyphs: {self.get_money()}
 │Letter XP:
 │────────────────────────────
-│A   B   C   D   E   F   G   H   I   J   K   L   M
-│{'{:3d}'.format(1)} {'{:3d}'.format(2)} {'{:3d}'.format(3)}
-│N   O   P   Q   R   S   T   U   V   W   X   Y   Z
-│
+│{letter_xp_string}
 └────────────────────────────"""
         return msg
 
