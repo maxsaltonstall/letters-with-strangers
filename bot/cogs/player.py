@@ -1,13 +1,9 @@
-import logging
-
 from discord.ext import commands
 
 from ..models.player import Player
-from ..models.party import Party
-from ..models.dictionary import Dictionary
-from ..models.util.string_util import StringUtil
 
-class Player(commands.Cog):
+
+class User_Cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -21,5 +17,6 @@ class Player(commands.Cog):
         player = Player(ctx.author)
         await player.show_progress(ctx)
 
+
 def setup(bot):
-    bot.add_cog(Player(bot))
+    bot.add_cog(User_Cog(bot))

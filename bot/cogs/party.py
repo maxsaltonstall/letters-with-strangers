@@ -5,7 +5,8 @@ from discord.ext import commands
 from ..models.player import Player
 from ..models.party import Party
 
-class Party(commands.Cog):
+
+class Party_Cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -36,5 +37,6 @@ class Party(commands.Cog):
         player.unset_party_id()
         await ctx.send(msg)
 
+
 def setup(bot):
-    bot.add_cog(Party(bot))
+    bot.add_cog(Party_Cog(bot))

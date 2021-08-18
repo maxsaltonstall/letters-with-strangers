@@ -1,18 +1,19 @@
-import os, logging
+import os
+import logging
 
 from discord.ext import commands
-
 from dotenv import load_dotenv
-load_dotenv(override=True)
 
 from ..models.player import Player
 from ..models.party import Party
 from ..models.dictionary import Dictionary
 from ..models.util.string_util import StringUtil
 
+load_dotenv(override=True)
 lexicon = os.environ.get("LEXICON", "sowpods")
 
-class Words(commands.Cog):
+
+class Words_Cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
@@ -71,5 +72,6 @@ class Words(commands.Cog):
         player = Player(ctx.author)
         await ctx.send(player.purge())
 
+
 def setup(bot):
-    bot.add_cog(Words(bot))
+    bot.add_cog(Words_Cog(bot))

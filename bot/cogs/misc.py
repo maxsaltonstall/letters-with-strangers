@@ -1,13 +1,9 @@
-import logging
-
 from discord.ext import commands
 
 from ..models.player import Player
-from ..models.party import Party
-from ..models.dictionary import Dictionary
-from ..models.util.string_util import StringUtil
 
-class Words(commands.Cog):
+
+class Misc_Cogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -26,5 +22,6 @@ class Words(commands.Cog):
             player.cheat()
         await ctx.send("Okay cheaty! You cheated.")
 
+
 def setup(bot):
-    bot.add_cog(Words(bot))        
+    bot.add_cog(Misc_Cogs(bot))
