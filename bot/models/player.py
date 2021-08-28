@@ -85,12 +85,12 @@ class Player:
         if len(self.get_letters()) >= self.state["handlimit"]:
             return(f"{self.state['username']}, you already have a full hand of letters")
         else:
-            letter = Letter.random_letter(restricted_letters=['B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S','T','V','W','X','Y','Z'])
+            letter = Letter.random_letter(restricted_letters=['B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'])
             self.state["letters"].append(letter)
             self.save_state()
             if letter in ('A', 'E', 'I', 'O', 'U'):
                 return(f"{self.state['username']}, you can have an **{letter}**")
-            return(f"{self.state['username']}, you can have a **{letter}**")        
+            return(f"{self.state['username']}, you can have a **{letter}**")
 
     def cheat(self):  # for testing/developing
         try:
