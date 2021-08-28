@@ -22,6 +22,11 @@ class Words_Cog(commands.Cog):
         player = Player(ctx.author)
         await ctx.send(player.add_letter())
 
+    @commands.command(brief="Buy a new vowel, but for more money", description="For getting new vowels only")
+    async def getvowel(self, ctx):
+        player = Player(ctx.author)
+        await ctx.send(player.add_vowel())
+
     @commands.command(brief='Get party\'s letters', description='Get all letters held by members of your party', aliases=['curr', 'cu'])
     async def letters(self, ctx):
         player = Player(ctx.author)

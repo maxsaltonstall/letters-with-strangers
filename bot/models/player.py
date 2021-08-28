@@ -25,7 +25,7 @@ class Player:
                 self.state["username"] = user.name
                 self.state["letters"] = []
                 self.state["score"] = 0  # experience for advancing level
-                self.state["money"] = 0  # currency to spend on stuff
+                self.state["money"] = 10  # currency to spend on stuff, so you can buy letters
                 self.state["level"] = 1  # long term advancement
                 self.state["handlimit"] = 8  # default for new players
                 self.state["letter_xp"] = {}  # track progress per letter + wildcard
@@ -81,6 +81,17 @@ class Player:
                 return(f"{self.state['username']}, you can have an **{letter}**")
             return(f"{self.state['username']}, you can have a **{letter}**")
 
+    def add_vowel(self):
+        if len(self.get_letters()) >= self.state["handlimit"]:
+            return(f"{self.state['username']}, you already have a full hand of letters")
+        else:
+            letter = Letter.random_letter(restricted_letters=['B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S','T','V','W','X','Y','Z'])
+            self.state["letters"].append(letter)
+            self.save_state()
+            if letter in ('A', 'E', 'I', 'O', 'U'):
+                return(f"{self.state['username']}, you can have an **{letter}**")
+            return(f"{self.state['username']}, you can have a **{letter}**")        
+
     def cheat(self):  # for testing/developing
         try:
             self.state["letters"] = ["A", "E", "I", "L", "N", "R", "S", "T"]
@@ -127,11 +138,18 @@ class Player:
 
         letter_xp_string = StringUtil.format_player_xp(self.get_letter_xp())
 
+        try:
+            lvl = self.get_level()
+        except Exception as e:
+            logging.error("# Error 5 #: Error when getting player level")
+            logging.exception(str(e))
+            lvl = 1
+
         embed = discord.Embed(
             title=f"Player profile: {self.get_username()}",
             description=f"""
                 ...................................................
-                Level: **{self.get_level()}**
+                Level: **{lvl}**
                 Score: **{self.get_score()}**
                 Glyphs: **{self.get_money()}**
                 ...................................................
