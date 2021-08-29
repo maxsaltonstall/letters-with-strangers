@@ -10,7 +10,7 @@ Cooperative word-forming, via Discord bot.
 </sup>
 <br>
 <sup>
-    <a href="about:blank">Invite to your server (soon)</a>
+    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Invite to your server (soon)</a>
 </sup>
 </p>
 
