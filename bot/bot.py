@@ -1,5 +1,4 @@
 import os, logging
-import google.cloud.logging
 
 from discord.ext import commands
 
@@ -9,6 +8,7 @@ logging.basicConfig(level=logging.INFO)
 
 logging.info("⚙️  Loading .env...")
 load_dotenv(override=True)
+
 
 def create_bot():
     bot = commands.Bot(
