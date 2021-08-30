@@ -10,7 +10,7 @@ class Misc_Cogs(commands.Cog):
     @commands.command(brief='Greetings stranger', description='Hello and introductions')
     async def hello(self, ctx):
         player = ctx.author
-        await ctx.send("Hello {}, and welcome to Letters With Strangers. I'm here to help you play the game".format(player))
+        await ctx.send("Hello {}, and welcome to Letters With Strangers. I'm here to help you play the game.\nStart by using ..get to have the bot give you a letter, and you can use ..party to join with others players.\nOnce you have a group and some letters, use ..word to form a word and score points!".format(player))
 
     @commands.command(brief='Kick-start your LWS play', description='Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start!')
     async def cheat(self, ctx):
