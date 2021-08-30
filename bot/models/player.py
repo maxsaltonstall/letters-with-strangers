@@ -74,11 +74,8 @@ class Player:
         if len(self.get_letters()) >= self.state["handlimit"]:
             return(f"{self.state['username']}, you already have a full hand of letters")
         else:
-            restricted_letters = self.get_letters()  # prevent duplicates
-            if letter_type == 'vowel':
-                restricted_letters += ['B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z']
-            letter = Letter.random_letter(restricted_letters=restricted_letters)
-            self.state["letters"].append(letter)
+            letter = Letter.random_letter(letter_type=letter_type, restricted_letters=self.get_letters())
+            self.state["letters"].extend(letter)
             self.save_state()
             article = 'an' if letter in ('A', 'F', 'H', 'I', 'L', 'M', 'N', 'O', 'R', 'S', 'X') else 'a'
             return(f"{self.state['username']}, you can have {article} **{letter}**")
@@ -167,7 +164,7 @@ class Player:
             return False
 
     def deduct_money(self, amount):
-        if self.get_money < amount:
+        if self.get_money() < amount:
             raise ValueError(f"Unable to deduct {amount} from player {self.get_id()}; their balance is only {self.get_money()}")
         else:
             self.state["money"] -= amount

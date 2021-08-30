@@ -26,9 +26,9 @@ class Words_Cog(commands.Cog):
     async def getvowel(self, ctx):
         cost = 5
         player = Player(ctx.author)
-        if player.has_money(cost):
+        if player.check_money(cost):
             player.deduct_money(cost)
-            await ctx.send(player.add_letter(type='vowel'))
+            await ctx.send(player.add_letter(letter_type='vowel'))
         else:
             await ctx.send(f"Sorry, you can't affort a vowel. You need {cost} glyphs but you only have {player.get_money()}")
 
