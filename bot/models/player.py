@@ -138,18 +138,11 @@ class Player:
 
         letter_xp_string = StringUtil.format_player_xp(self.get_letter_xp())
 
-        try:
-            lvl = self.get_level()
-        except Exception as e:
-            logging.error("# Error 5 #: Error when getting player level")
-            logging.exception(str(e))
-            lvl = 1
-
         embed = discord.Embed(
             title=f"Player profile: {self.get_username()}",
             description=f"""
                 ...................................................
-                Level: **{lvl}**
+                Level: **{self.get_level()}**
                 Score: **{self.get_score()}**
                 Glyphs: **{self.get_money()}**
                 ...................................................
@@ -177,7 +170,13 @@ class Player:
         self.save_state()
 
     def get_level(self):
-        return self.state["level"]
+        try:
+            lvl = self.state["level"]
+        except Exception as e:
+            logging.error("# Error 5 #: Error when getting player level")
+            logging.exception(str(e))
+            lvl = 1
+        return lvl
 
     def get_money(self):
         return self.state["money"]
