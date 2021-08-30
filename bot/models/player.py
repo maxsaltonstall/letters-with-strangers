@@ -70,27 +70,18 @@ class Player:
     def get_letters(self):
         return self.state["letters"]
 
-    def add_letter(self):
+    def add_letter(self, letter_type: str = ''):
         if len(self.get_letters()) >= self.state["handlimit"]:
             return(f"{self.state['username']}, you already have a full hand of letters")
         else:
-            letter = Letter.random_letter(restricted_letters=self.get_letters())
+            restricted_letters = self.get_letters()  # prevent duplicates
+            if letter_type == 'vowel':
+                restricted_letters += ['B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z']
+            letter = Letter.random_letter(restricted_letters=restricted_letters)
             self.state["letters"].append(letter)
             self.save_state()
-            if letter in ('A', 'E', 'I', 'O', 'U'):
-                return(f"{self.state['username']}, you can have an **{letter}**")
-            return(f"{self.state['username']}, you can have a **{letter}**")
-
-    def add_vowel(self):
-        if len(self.get_letters()) >= self.state["handlimit"]:
-            return(f"{self.state['username']}, you already have a full hand of letters")
-        else:
-            letter = Letter.random_letter(restricted_letters=['B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'])
-            self.state["letters"].append(letter)
-            self.save_state()
-            if letter in ('A', 'E', 'I', 'O', 'U'):
-                return(f"{self.state['username']}, you can have an **{letter}**")
-            return(f"{self.state['username']}, you can have a **{letter}**")
+            article = 'an' if letter in ('A', 'F', 'H', 'I', 'L', 'M', 'N', 'O', 'R', 'S', 'X') else 'a'
+            return(f"{self.state['username']}, you can have {article} **{letter}**")
 
     def cheat(self):  # for testing/developing
         try:
@@ -168,6 +159,19 @@ class Player:
     def add_money(self, cash):
         self.state["money"] += cash
         self.save_state()
+
+    def check_money(self, amount):
+        if self.get_money() >= amount:
+            return True
+        else:
+            return False
+
+    def deduct_money(self, amount):
+        if self.get_money < amount:
+            raise ValueError(f"Unable to deduct {amount} from player {self.get_id()}; their balance is only {self.get_money()}")
+        else:
+            self.state["money"] -= amount
+            self.save_state()
 
     def get_level(self):
         try:
