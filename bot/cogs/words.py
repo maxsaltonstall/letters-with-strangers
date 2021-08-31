@@ -24,8 +24,13 @@ class Words_Cog(commands.Cog):
 
     @commands.command(brief="Buy a new vowel, but for more money", description="For getting new vowels only")
     async def getvowel(self, ctx):
+        cost = 5
         player = Player(ctx.author)
-        await ctx.send(player.add_vowel())
+        if player.check_money(cost):
+            player.deduct_money(cost)
+            await ctx.send(player.add_letter(letter_type='vowel'))
+        else:
+            await ctx.send(f"Sorry, you can't affort a vowel. You need {cost} glyphs but you only have {player.get_money()}")
 
     @commands.command(brief='Get party\'s letters', description='Get all letters held by members of your party', aliases=['curr', 'cu'])
     async def letters(self, ctx):
