@@ -68,6 +68,13 @@ pip3 install -r requirements-dev.txt
 python -m flake8
 ```
 
+## Testing
+This repo uses [nox](https://nox.thea.codes/) for tests. To run the test suite (within your virtualenv):
+```sh
+pip3 install -r requirements-dev.txt
+python -m nox
+```
+
 ## Monitoring with PM2
 PM2 is a monitoring/running/daemon tool. You can install PM2 with `npm i -g pm2`, assuming you have Node.JS installed. Read more in the [PM2 documentation](PM2.md)
 
