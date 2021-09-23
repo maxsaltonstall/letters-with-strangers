@@ -60,16 +60,8 @@ To set up:
     * (optional) To specify a datastore namespace, add `DATASTORE_NAMESPACE=<namespace>`. If you omit this value, a namespace will be auto-generated.
 1. Configure authentication -- ensure that whichever user or service account you run LWS as has permissions to read/write Datastore entries.
 
-## Linting
-This repo has an Actions config that will apply the flake8 linter to all PRs.
-To run the linter locally (within your virtualenv):
-```sh
-pip3 install -r requirements-dev.txt
-python -m flake8
-```
-
 ## Testing
-This repo uses [nox](https://nox.thea.codes/) for tests. To run the test suite (within your virtualenv):
+This repo uses [nox](https://nox.thea.codes/) for tests (including linting with flake8). To run the test suite (within your virtualenv):
 ```sh
 pip3 install -r requirements-dev.txt
 python -m nox
