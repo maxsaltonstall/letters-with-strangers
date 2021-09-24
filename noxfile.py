@@ -1,5 +1,5 @@
 import nox
-locations = "bot", "main.py", "noxfile.py"
+locations = "bot", "main.py", "cloud.py", "noxfile.py"
 
 
 @nox.session

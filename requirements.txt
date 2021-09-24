@@ -3,5 +3,3 @@ discord.py
 python-dotenv
 jsonpickle
 typing-extensions
-google-cloud-datastore
-google-cloud-logging
