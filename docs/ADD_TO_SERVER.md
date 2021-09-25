@@ -15,3 +15,7 @@ TOKEN=[text you copied]
 ```
 
 ## Run
+Now you can run the bot! Just type:
+```sh
+python main.py
+```
