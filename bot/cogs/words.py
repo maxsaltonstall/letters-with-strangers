@@ -1,5 +1,6 @@
 import os
 import logging
+from time import perf_counter
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -8,6 +9,7 @@ from ..models.player import Player
 from ..models.party import Party
 from ..models.dictionary import Dictionary
 from ..models.util.string_util import StringUtil
+from ..models.util.cloud_monitoring import emit_float_metric
 
 load_dotenv(override=True)
 lexicon = os.environ.get("LEXICON", "sowpods")
@@ -52,6 +54,7 @@ class Words_Cog(commands.Cog):
     
     @commands.command(brief='Use letters to score a word', description='Make a word out of letters you have in hand or party')
     async def word(self, ctx, *args):
+        time_start = perf_counter()
         if not len(args):
             await ctx.send("Please specify a word, like `..word orthography`")
         else:
@@ -71,6 +74,8 @@ class Words_Cog(commands.Cog):
             except Exception as e:
                 logging.exception(str(e))
                 await ctx.send("Server error! Unable to form word. 😞")
+        time_elapsed_ms = (perf_counter() - time_start) * 1000
+        emit_float_metric(metric_series="make_word_duration_ms", metric_value=time_elapsed_ms)
 
     @commands.command(brief="Shuffles your hand", description="Shuffles your hand!")
     async def shuffle(self, ctx):

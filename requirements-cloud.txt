@@ -1,0 +1,4 @@
+-r requirements.txt
+google-cloud-datastore
+google-cloud-logging
+google-cloud-monitoring

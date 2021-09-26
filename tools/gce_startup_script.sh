@@ -28,7 +28,7 @@ chown -R pythonapp:pythonapp /opt/app
 # Python environment setup
 virtualenv -p python3 /opt/app/env
 source /opt/app/env/bin/activate
-/opt/app/env/bin/pip install -r /opt/app/requirements.txt
+/opt/app/env/bin/pip install -r /opt/app/requirements-cloud.txt
 
 # populate application config
 DISCORD_TOKEN_SECRET_NAME=$(curl 'http://metadata.google.internal/computeMetadata/v1/instance/attributes/DISCORD_TOKEN_SECRET_NAME' --silent --fail --show-error --header 'Metadata-Flavor: Google')
