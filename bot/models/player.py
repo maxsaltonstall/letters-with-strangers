@@ -62,11 +62,22 @@ class Player:
         else:
             return None
 
-    def unset_party_id(self) -> None:
-        if "party" in self.state:
+    def leave_party(self) -> str:
+        party_id = self.get_party_id()
+        if party_id:
             del self.state["party"]
             self.save_state()
-    
+            try:
+                from .party import Party
+                party = Party(party_id)
+                party.remove_member(self.get_id())
+            except Exception as e:
+                # something went wrong, but we were able to remove the user's party ID. So log it and move on.
+                logging.error(f"Unable to remove member {self.get_id()} from party {party_id} [{str(e)}]")
+            return "You've left that party."
+        else:
+            return "You're not in a party! Start one with `..party @username1 @username2`"
+        
     def get_letters(self):
         return self.state["letters"]
 

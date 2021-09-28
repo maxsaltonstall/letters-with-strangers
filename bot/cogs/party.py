@@ -32,9 +32,7 @@ class Party_Cog(commands.Cog):
     @commands.command(brief='Leave your party', description='Leave your current party, if you\'re in one')
     async def leave(self, ctx):
         player = Player(ctx.author)
-        party = Party(player.get_party_id())
-        msg = party.remove_member(player.get_id())
-        player.unset_party_id()
+        msg = player.leave_party()
         await ctx.send(msg)
 
 
