@@ -51,14 +51,14 @@ class Party:
         return msg
 
     def remove_member(self, member_id: int) -> str:
-        try:
+        if self.state and "members" in self.state:
             self.state["members"].remove(member_id)
             self.save_state()
             if len(self.get_members()) <= 1:
-                disband_party(self.get_id(), self.get_members())
-            return "You've left that party."
-        except ValueError:
-            return "Error: member not found in party"
+                disband_party(self.get_id())
+        else:
+            # this is a corrupted party; purge it
+            disband_party(self.get_id())
 
     def get_members(self) -> list:
         return self.state["members"]
@@ -113,8 +113,8 @@ class Party:
             for letter in letters:  # give each player xp for each letter in word
                 player.add_letter_xp(letter, 1)
         msg += f"you formed the word '{word}'\n{'everyone' if len(self.get_members()) > 1 else ''} scored {word_points} points and received {word_money} glyphs\n"
-        if party_size == 1:
-            disband_party(self.party_id, self.get_members())
+        if party_size <= 1:
+            disband_party(self.party_id)
         return msg
 
     def __str__(self):

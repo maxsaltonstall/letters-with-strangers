@@ -110,12 +110,16 @@ def load_party(party_id: int) -> dict:
             return None
 
 
-def disband_party(party_id: int, players: list):
+def disband_party(party_id: int):
 
-    for player_id in players:
-        player_state = load_player(player_id)
-        del player_state['party']
-        save_player(player_id, player_state)
+    party_state = load_party(party_id)
+
+    if party_state and party_state["members"]:
+        players = party_state["members"]
+        for player_id in players:
+            player_state = load_player(player_id)
+            del player_state['party']
+            save_player(player_id, player_state)
 
     if data_storage() == "local":
         os.remove(party_statefile(party_id))

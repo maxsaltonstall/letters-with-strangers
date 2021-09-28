@@ -62,11 +62,19 @@ class Player:
         else:
             return None
 
-    def unset_party_id(self) -> None:
-        if "party" in self.state:
-            del self.state["party"]
-            self.save_state()
-    
+    def leave_party(self) -> str:
+        party_id = self.get_party_id()
+        del self.state["party"]
+        self.save_state()
+        if party_id:
+            from .party import Party
+            party = Party(party_id)
+            party.remove_member(self.get_id())
+            del self.state['party']
+            return "You've left that party."
+        else:
+            return "You're not in a party! Start one with `..party @username1 @username2`"
+        
     def get_letters(self):
         return self.state["letters"]
 
