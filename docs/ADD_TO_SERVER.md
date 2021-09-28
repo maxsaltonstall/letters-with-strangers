@@ -1,2 +1,2 @@
 # Adding to Server
-To add to a server, have an admin or moderator go to (this link)[https://discord.com/api/oauth2/authorize?client_id=846545031971733544&permissions=34359814208&scope=bot] to add it to the server.
+To add to a server, have an admin or moderator go to [this link](https://discord.com/api/oauth2/authorize?client_id=846545031971733544&permissions=34359814208&scope=bot) to add it to the server.
