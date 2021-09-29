@@ -18,10 +18,7 @@ class StringUtil:
     def emoji_letter(s: str) -> str:
         """Translate an ASCII character to an emoji character.
         """
-        s = s.upper()
-        EMOJI_MAP = {i: i + 0x1F1A5 for i in range(0x21, 0x7F)}
-
-        return s.translate(EMOJI_MAP)
+        return f":regional_indicator_{s.lower()}:"
 
     @staticmethod
     def format_player_xp(letter_xp: dict, row_length: int = 4) -> str:
