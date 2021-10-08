@@ -1,0 +1,2 @@
+# Adding to Server
+To add to a server, have an admin or moderator go to [this link](https://discord.com/api/oauth2/authorize?client_id=846545031971733544&permissions=34359814208&scope=bot) to add it to the server. When you get there, select your server from the dropdown and then click the "Add to Server" button. You may have to complete a captcha to add it to a server.
