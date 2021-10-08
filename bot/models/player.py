@@ -9,20 +9,20 @@ from .util.datastore import save_player, load_player
 
 class Player:
 
-    def __init__(self, user=None):
+    def __init__(self, player=None):
         
-        if user:
+        if player:
             
-            self.player_id = user.id
+            self.player_id = player.id
             
             player_state = self.read_state(self.player_id)  # try loading player state from storage
 
             if player_state:
                 self.state = player_state
-            else:  # create new user
+            else:  # create new player
                 # TIP: use only data types that can be natively stored in Cloud Datastore (e.g. don't use defaultdict)
                 self.state = {}
-                self.state["username"] = user.name
+                self.state["username"] = player.name
                 self.state["letters"] = []
                 self.state["score"] = 0  # experience for advancing level
                 self.state["money"] = 10  # currency to spend on stuff, so you can buy letters
@@ -98,8 +98,7 @@ class Player:
             self.save_state()
             return("Your hand is now: A, E, I, L, N, R, S, and T!")
         except Exception as e:
-            logging.error("# Error 4 #: Error when cheating in letters")
-            logging.exception(str(e))
+            logging.error(f"# Error 4 #: Error when cheating in letters: {str(e)}")
             return("Unable to help you cheat, cheaty!")
 
     def purge(self):  # for testing/developing
@@ -114,8 +113,7 @@ class Player:
 
     def remove_letters(self, letters: list):
         for letter in letters:
-            if letter in self.state["letters"]:
-                self.state["letters"].remove(letter)
+            self.state["letters"].remove(letter)
         self.save_state()
 
     def shuffle_letters(self):
@@ -185,8 +183,7 @@ class Player:
         try:
             lvl = self.state["level"]
         except Exception as e:
-            logging.error("# Error 5 #: Error when getting player level")
-            logging.exception(str(e))
+            logging.error(f"# Error 5 #: Error when getting player level: {str(e)}")
             lvl = 1
         return lvl
 

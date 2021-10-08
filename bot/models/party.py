@@ -50,7 +50,7 @@ class Party:
             msg += f"Couldn't add {StringUtil.readable_list(already_partying_members)} -- they're already in another party!"
         return msg
 
-    def remove_member(self, member_id: int) -> str:
+    def remove_member(self, member_id: int):
         if self.state and "members" in self.state:
             self.state["members"].remove(member_id)
             self.save_state()
@@ -112,7 +112,7 @@ class Party:
             player.add_money(word_money)
             for letter in letters:  # give each player xp for each letter in word
                 player.add_letter_xp(letter, 1)
-        msg += f"you formed the word '{word}'\n{'everyone' if len(self.get_members()) > 1 else ''} scored {word_points} points and received {word_money} glyphs\n"
+        msg += f"you formed the word '{word}'\n{'everyone' if len(self.get_members()) > 1 else 'and'} scored {word_points} points and received {word_money} glyphs\n"
         if party_size <= 1:
             disband_party(self.party_id)
         return msg
