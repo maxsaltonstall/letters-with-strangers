@@ -24,4 +24,4 @@ def create_bot():
     try:
         bot.run(os.environ["TOKEN"])
     except Exception as e:
-        print(f"❗ Error while logging in: {e}")
+        logging.critical(f"❗ Critical error while logging in: {e}")
