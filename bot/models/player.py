@@ -81,15 +81,27 @@ class Player:
     def get_letters(self):
         return self.state["letters"]
 
-    def add_letter(self, letter_type: str = ''):
-        if len(self.get_letters()) >= self.state["handlimit"]:
-            return(f"{self.state['username']}, you already have a full hand of letters")
+    def num_letters_in_hand(self) -> int:
+        return len(self.state["letters"])
+
+    def get_handlimit(self) -> int:
+        return self.state["handlimit"]
+
+    def add_letters(self, letter_type: str = '', quantity: int = 1) -> str:
+        new_letters = []
+        letters_in_hand = self.get_letters()
+        for i in range(quantity):
+            letter = Letter.random_letter(letter_type=letter_type, restricted_letters=letters_in_hand)
+            new_letters.extend(letter)
+            letters_in_hand.extend(letter)
+        self.save_state()
+
+        if quantity == 1:
+            letter_added = new_letters[0]
+            article = 'an' if letter_added in ('A', 'F', 'H', 'I', 'L', 'M', 'N', 'O', 'R', 'S', 'X') else 'a'
+            return f"{self.get_username()}, you can have {article} **{letter_added}**"
         else:
-            letter = Letter.random_letter(letter_type=letter_type, restricted_letters=self.get_letters())
-            self.state["letters"].extend(letter)
-            self.save_state()
-            article = 'an' if letter in ('A', 'F', 'H', 'I', 'L', 'M', 'N', 'O', 'R', 'S', 'X') else 'a'
-            return(f"{self.state['username']}, you can have {article} **{letter}**")
+            return f"{self.get_username()}, you can have {StringUtil.readable_list(new_letters, format='bold')}"
 
     def cheat(self):  # for testing/developing
         try:

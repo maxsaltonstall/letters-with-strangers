@@ -4,10 +4,8 @@ from discord.ext import commands
 
 from dotenv import load_dotenv
 
-logging.basicConfig(level=logging.INFO)
-
-logging.info("⚙️  Loading .env...")
 load_dotenv(override=True)
+logging.basicConfig(level=os.environ.get("LOG_LEVEL", logging.INFO))
 
 
 def create_bot():
