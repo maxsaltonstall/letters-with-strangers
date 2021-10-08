@@ -23,8 +23,6 @@ class Words_Cog(commands.Cog):
     async def get(self, ctx, *args):
         quantity_requested = args[0] if len(args) else '1'
 
-        logging.debug(quantity_requested)
-
         if not quantity_requested.isdigit():
             msg = "Please specify the number of letters requested as an integer."
         else:
@@ -38,7 +36,6 @@ class Words_Cog(commands.Cog):
             if open_letter_slots == 0:
                 msg = f"{player.get_username()}, you already have a full hand of letters"
             else:
-                logging.debug(f"quantity requested = {quantity_requested}")
                 msg = player.add_letters(quantity=quantity_requested)
 
         await ctx.send(msg)
