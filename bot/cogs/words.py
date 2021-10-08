@@ -19,10 +19,29 @@ class Words_Cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command(brief="Buy a new letter", description="For getting new letters")
-    async def get(self, ctx):
-        player = Player(ctx.author)
-        await ctx.send(player.add_letter())
+    @commands.command(brief="Buy a new letter", description="For getting new letters. `..get` will request one letter, while `..get 3` will request three letters.")
+    async def get(self, ctx, *args):
+        quantity_requested = args[0] if len(args) else '1'
+
+        logging.debug(quantity_requested)
+
+        if not quantity_requested.isdigit():
+            msg = "Please specify the number of letters requested as an integer."
+        else:
+            quantity_requested = int(quantity_requested)
+            player = Player(ctx.author)
+
+            # give the user the number they requested, or as many as they can handle, if they requested too many
+            open_letter_slots = player.get_handlimit() - player.num_letters_in_hand()
+            quantity_requested = min(open_letter_slots, quantity_requested)
+        
+            if open_letter_slots == 0:
+                msg = f"{player.get_username()}, you already have a full hand of letters"
+            else:
+                logging.debug(f"quantity requested = {quantity_requested}")
+                msg = player.add_letters(quantity=quantity_requested)
+
+        await ctx.send(msg)
 
     @commands.command(brief="Buy a new vowel, but for more money", description="For getting new vowels only")
     async def getvowel(self, ctx):
