@@ -118,14 +118,10 @@ class Player:
         self.save_state()
         return("Poof! All your letters are gone.")
 
-    def remove_letter(self, letter: str):
-        if letter.upper() in self.state["letters"]:
-            self.state["letters"].remove(letter.upper())
-            self.save_state()
-
     def remove_letters(self, letters: list):
         for letter in letters:
-            self.state["letters"].remove(letter)
+            if letter.upper() in self.state["letters"]:
+                self.state["letters"].remove(letter)
         self.save_state()
 
     def shuffle_letters(self):
