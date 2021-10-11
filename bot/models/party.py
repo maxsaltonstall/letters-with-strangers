@@ -107,11 +107,13 @@ class Party:
             msg += f"You got a random event, with chance {word_event_chance} out of 1000\n"
         for player_id in self.get_members():
             player = Player.load(player_id)
-            player.remove_letters(letters)
-            player.add_points(word_points)
+            player_leveled_up = player.add_points_and_check_for_levelup(word_points)
+            if player_leveled_up:
+                msg += f"{player.get_mention_tag()} is now level {player_leveled_up}! :rocket:\n"
             player.add_money(word_money)
             for letter in letters:  # give each player xp for each letter in word
                 player.add_letter_xp(letter, 1)
+            player.remove_letters(letters)
         msg += f"you formed the word '{word}'\n{'everyone' if len(self.get_members()) > 1 else 'and'} scored {word_points} points and received {word_money} glyphs\n"
         if party_size <= 1:
             disband_party(self.party_id)

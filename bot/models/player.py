@@ -3,6 +3,7 @@ import logging, random
 import discord
 
 from .letter import Letter
+from .levels import Levels
 from .util.string_util import StringUtil
 from .util.datastore import save_player, load_player
 
@@ -134,7 +135,15 @@ class Player:
 
     def add_points(self, points):
         self.state["score"] += points
+        self.state["level"] = Levels.get_level_for_score(self.get_score())
         self.save_state()
+
+    def add_points_and_check_for_levelup(self, points: int) -> int:
+        """if player has leveled up, return new level. Else return None"""
+        old_level = self.get_level()
+        self.add_points(points)
+        logging.debug(f"points: {self.get_score()}; level: {self.get_level()}")
+        return None if self.get_level() == old_level else self.get_level()
 
     def get_score(self):
         return self.state["score"]
